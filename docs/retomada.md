@@ -2,6 +2,10 @@
 
 ## Onde paramos
 
+**Conexão GitHub confirmada:** plugin instalado e autenticação aceita; identidade `SantosMarcos95` verificada. Consulta ao repositório confirma conta com push/admin e repositório público vazio, mas escrita pelo plugin (`create_file` de README) recusada com HTTP 403 `Resource not accessible by integration`. Autenticação do plugin não habilitou Git HTTPS: push continua sem credencial. Nenhum arquivo publicado. Próximo passo: autenticar Git pelo GitHub CLI no terminal (gh ainda não instalado) ou ajustar concessão de escrita da integração. Não repetir instalação do plugin nem dizer que conta está desconectada. `/tmp/salao-publish.json` contém somente os 186 arquivos rastreados para preparação do envio; não inclui .env/.local.
+
+**Resultado do envio:** `origin` configurado para `SantosMarcos95/Gestor-salao`; commit de continuidade `9797416` criado. `git push -u origin main` falhou por ausência de autenticação HTTPS (`could not read Username`). Nada enviado. Próximo passo: autenticar GitHub neste ambiente por fluxo seguro e repetir push, verificar hash remoto; depois preparar Vercel. Não pedir tokens/senhas no chat. Esta nota ainda não foi commitada.
+
 **Destino GitHub confirmado pelo usuário:** `https://github.com/SantosMarcos95/Gestor-salao.git`. Consulta remota bem-sucedida sem branches/tags retornados; repositório vazio nesta verificação. Preparando `origin` e envio de `main`; resultado do push ainda pendente. Dados locais e credenciais continuam excluídos.
 
 **Salvamento Git concluído:** commit local inicial `0e86f90` criado na branch `main`, com 186 arquivos. `git diff --cached --check` passou após remover linha vazia final de unidade systemd. Não houve mudança funcional nem repetição dos testes nesta etapa. Push e deploy dependem das conexões GitHub/Vercel e destino solicitados. Esta atualização de continuidade é posterior ao commit inicial e deve acompanhar o próximo commit.
