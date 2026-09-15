@@ -1,4 +1,7 @@
-import { createApp } from '../apps/api/src/bootstrap';
+// The API is compiled with TypeScript's legacy decorator settings before Vercel
+// bundles this function. Importing the source here makes Vercel's own TS
+// transform reinterpret Nest decorators as standard decorators.
+import { createApp } from '../apps/api/dist/bootstrap.js';
 
 let handler: ((req: any, res: any) => void) | undefined;
 
