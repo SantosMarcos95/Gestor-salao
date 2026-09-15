@@ -7,7 +7,7 @@
 - `vercel.json` criado na raiz: `npm run vercel-build`, saída estática `apps/web/dist`, função `api/index.ts` e fallback das rotas do React para `index.html`.
 - `npm run typecheck`, `npm run build` e `npm run vercel-build` passaram. Nenhum banco, migration, dado real, backup ou processo externo foi acessado nesta etapa.
 - A API de produção exige `DATABASE_URL` e `WEB_ORIGIN`; `WEB_ORIGIN` deve ser a origem HTTPS pública do mesmo projeto. Sem ambas, a função falha ao inicializar. A variável criada pelo usuário ainda precisa ser identificada no painel sem compartilhar o valor no chat.
-- Próximo passo: enviar este commit ao `main`, aguardar o deploy automático da Vercel, testar `/api/health` e a tela/login. Se o projeto Vercel estiver com Root Directory diferente da raiz, ajustar para a raiz do repositório.
+- Commit `802c79a` criado e enviado com sucesso para `origin/main`; a consulta independente posterior ao remoto foi bloqueada por DNS do sandbox, mas o `git push` confirmou `main -> main`. Próximo passo: aguardar o deploy automático da Vercel, testar `/api/health` e a tela/login. Se o projeto Vercel estiver com Root Directory diferente da raiz, ajustar para a raiz do repositório.
 
 ## Onde paramos
 
