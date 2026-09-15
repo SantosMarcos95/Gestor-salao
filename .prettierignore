@@ -1,0 +1,11 @@
+node_modules/
+**/dist/
+.local/
+package-lock.json
+database/migrations/
+database/schema.prisma
+*.tsbuildinfo
+.env*
+.agents/
+.codex/
+.git/

@@ -1,0 +1,18 @@
+[Unit]
+Description=Backup local do banco do salão
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/salao-gestao
+EnvironmentFile=/etc/salao-backup.env
+ExecStart=/usr/bin/node /opt/salao-gestao/scripts/backup-job.mjs run
+User=salao-backup
+Group=salao-backup
+UMask=0077
+TimeoutStartSec=1h
+KillMode=control-group
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/salao-backup

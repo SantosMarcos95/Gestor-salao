@@ -1,0 +1,38 @@
+# Plano e critérios de entrega
+
+## Status desta iteração
+
+Infraestrutura em discussão em 15/09: usuário escolheu Vercel Hobby inicialmente e pretende migrar para Pro ao comercializar. Planejar ambiente gratuito para desenvolvimento/demonstração não comercial; uso operacional do salão também requer considerar plano comercial. Neon Free e Drive propostos, ainda não configurados. Modelos systemd não se aplicam diretamente à Vercel; adaptação da API e executor de backup pendentes.
+
+Fundação implementada e primeiros fluxos de autenticação/clientes/auditoria disponíveis. O cadastro básico de clientes está funcional; não equivale ao módulo completo com histórico de atendimentos. O controle de acesso no servidor está implementado; a administração visual de usuários, perfis e permissões individuais está disponível, com proteção do último administrador e auditoria. Troca de senha e recuperação assistida por administrador estão disponíveis, com revogação de sessões e troca obrigatória da senha provisória. Recuperação por e-mail, alteração de dados pessoais e gestão de sessões por dispositivo ainda serão desenvolvidas.
+
+## Próximas fases
+
+1. **Acesso e cadastros:** usuários e perfis entregues com último administrador protegido; troca de senha e recuperação assistida entregues; profissionais e serviços entregues com preço/duração e vínculo opcional profissional–usuário; jornadas, bloqueios e serviços realizados por cada profissional entregues. Agenda entregue na etapa seguinte. Recuperação por e-mail depende de configurar um serviço de envio. Toda mudança administrativa auditada.
+2. **Agenda — entregue:** grade dia/semana com colunas dinâmicas, filtro de profissional e paginação da equipe; vínculo profissional–usuário; agendamento multisserviço com preço/duração históricos; remarcação, status e histórico; bloqueio transacional contra sobreposição; cancelamento com motivo; filtros de agenda própria em consultas, opções e detalhes. Exceções de sobreposição permanecem desabilitadas.
+3. **Produtos e estoque — entregue:** unidade-base fixa, embalagens compatíveis, fornecedores, entradas, perdas, baixas manuais, ajustes de inventário e estoque mínimo. Quantidade decimal exata; movimento, saldo e auditoria na mesma transação; idempotência e edição concorrente. Saldo compartilhado pelo salão, negativo bloqueado. Custo por unidade-base opcional em entradas, com consulta restrita; custo médio, lotes, transferências e separação por unidade continuam fora desta etapa.
+4. **Atendimentos e comandas — entregue:** serviços e valores históricos, edição de preços autorizada, desconto fixo, motivo opcional e auditoria; vários profissionais do mesmo cliente; importação única da agenda, início/fim real, consumo confirmado com baixa única, histórico e cancelamento sem devolver produto utilizado. Serviços finalizados preservam valores; pagamento e quitação foram entregues na fase seguinte.
+5. **Pagamentos e financeiro — entregue:** recebimentos manuais em dinheiro, PIX, crédito, débito e outros; divisão de pagamento integral; troco separado; checkout atômico e idempotente; venda única; estornos parciais com saldo pendente e novo recebimento; cancelamento rastreável da venda e dos recebimentos; resumo por período separando vendas, cancelamentos, recebimentos e estornos. Sem integração bancária, taxas/repasses, parcelas futuras, despesas ou caixa diário.
+6. **Gestão — entregue nesta iteração:** dashboard operacional implementado com agenda por status no período, comandas pendentes, reposição de estoque, clientes e resumo financeiro autorizado; build, typecheck, testes unitários e integração/navegador aprovados em banco isolado. Relatórios de serviços/profissionais entregues com período, busca, ranking por quantidade, paginação, contagem sem duplicação entre agenda e atendimento e valores históricos sob permissão específica. Ocupação entregue com período de até 31 dias, jornada atual menos bloqueios, tempos ocupado/livre, taxa ponderada, cancelamentos/faltas e filtros de equipe. Sem histórico de versões de jornada; retrospectiva usa configuração atual, explicitada na tela. Relatório de consumo/reposição de estoque entregue com movimentos por período e saldo/mínimo atuais, quantidades exatas, filtros e permissão independente. Filtros avançados de auditoria entregues (período, usuário, ação, módulo, motivo e registro), com opções isoladas por salão e datas no fuso local. Relatório detalhado de recebimentos entregue e validado: filtros por período/cliente/forma/tipo, pagamentos e estornos por suas próprias datas, totais exatos e por meio. Exportações CSV dos quatro relatórios entregues com filtros completos, mesmas permissões, ocultação de valores, auditoria de geração e limite explícito de linhas. Build, typecheck, 26 testes unitários e suíte completa de integração/navegador aprovados na etapa de exportações. Próxima fase: preparação para produção, começando por backup/restauração.
+7. **Produção — em preparação:** comandos de backup/restauração implementados e ensaio isolado aprovado com todas as fixtures da integração, comparação de registros/restrições/triggers e recusa de corrupção/destino existente. Procedimento em `docs/backup-restauracao.md`. Ainda pendentes: backup real, armazenamento externo criptografado, frequência/retenção, agendamento/alertas e ensaios operacionais com RPO/RTO; métricas, HTTPS, credenciais separadas, acesso e privacidade, testes de carga e aceite operacional.
+
+## Regras não negociáveis
+
+Avanço de produção em 15/09: rotina local de backup com registro de estado, bloqueio de concorrência e verificação de idade/checksum revisada e testada com arquivos fictícios. Ensaios da API e do navegador sobre banco restaurado aprovados: autenticação, consultas equivalentes, escrita auditada, cadastro persistente após recarga, recebimentos conciliados, desktop/celular, logout e origem intacta. Comando `test:recovery` documentado. Ainda sem agendamento instalado ou alertas externos; pendentes política/destino externo, medição RPO/RTO com volume representativo e aceite operacional do responsável.
+
+- Servidor valida permissão e escopo em cada ação; frontend apenas orienta a interação.
+- Nenhum financeiro usa float. `numeric(14,2)` para valores e `numeric(18,6)` para quantidades/custos unitários. Decimais trafegam como strings.
+- Agendamentos usam intervalo `[início,fim)`. Transações bloqueiam o profissional antes de verificar conflito. A mesma disciplina vale para remarcações e bloqueios.
+- Sobreposição e estoque negativo dependem de permissão, política habilitada e motivo auditado.
+- Cancelamento de atendimento não devolve produto fisicamente consumido ao estoque.
+- Itens fechados preservam preço/descrição/custo históricos; correções geram ajustes, nunca exclusões financeiras definitivas.
+- Fechamento e baixa não podem duplicar com reenvio ou duplo clique.
+- Informação de outro salão não pode ser referenciada ou retornada.
+
+## Critério por módulo
+
+Validar autorização na API e escopo dos dados; entrada inválida; edição concorrente; transação e rollback; histórico; erros de rede; estados vazio/carregando/erro; navegação por teclado; computador/tablet/celular. Casos financeiros precisam conciliar os totais e os lançamentos de origem.
+
+## Extensões a decidir
+
+Comissões, caixa diário, despesas operacionais, sinais/adiantamentos, taxas e parcelas de cartão, lista de espera, recursos compartilhados, lotes/validade, mensagens oficiais de WhatsApp e integração fiscal. Elas não são implicitamente consideradas implementadas pelo modelo atual.

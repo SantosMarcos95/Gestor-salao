@@ -1,0 +1,10 @@
+[Unit]
+Description=Verificar backup local a cada hora
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+Unit=salao-backup-check.service
+
+[Install]
+WantedBy=timers.target

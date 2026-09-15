@@ -1,0 +1,518 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+enum PermissionEffect {
+  ALLOW
+  DENY
+}
+
+model Salon {
+  id String @id @default(uuid()) @db.Uuid
+  name String @db.VarChar(150)
+  timezone String @default("America/Sao_Paulo") @db.VarChar(80)
+  currency String @default("BRL") @db.Char(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  locations Location[]
+  memberships SalonUser[]
+  roles Role[]
+  clients Client[]
+  professionals Professional[]
+  services Service[]
+  auditLogs AuditLog[]
+  @@map("salons")
+}
+model Location {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  name String @db.VarChar(150)
+  active Boolean @default(true)
+  salon Salon @relation(fields: [salonId], references: [id], onDelete: Restrict)
+  @@unique([salonId, name])
+  @@unique([salonId, id])
+  appointments Appointment[]
+  @@map("locations")
+}
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  name String @db.VarChar(150)
+  email String @unique @db.VarChar(254)
+  passwordHash String @map("password_hash")
+  mustChangePassword Boolean @default(false) @map("must_change_password")
+  status UserStatus @default(ACTIVE)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  memberships SalonUser[]
+  sessions UserSession[]
+  @@map("users")
+}
+model SalonUser {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  active Boolean @default(true)
+  salon Salon @relation(fields: [salonId], references: [id], onDelete: Restrict)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  roles UserRole[]
+  overrides UserPermissionOverride[]
+  sessions UserSession[]
+  audits AuditLog[]
+  createdClients Client[] @relation("ClientCreator")
+  updatedClients Client[] @relation("ClientUpdater")
+  deletedClients Client[] @relation("ClientDeleter")
+  professional Professional?
+  @@unique([id, userId], map: "salon_users_id_user_unique")
+  @@unique([salonId, userId])
+  @@unique([salonId, id])
+  @@map("salon_users")
+}
+model Role {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  code String @db.VarChar(80)
+  name String @db.VarChar(100)
+  protected Boolean @default(false)
+  salon Salon @relation(fields: [salonId], references: [id], onDelete: Restrict)
+  permissions RolePermission[]
+  users UserRole[]
+  @@unique([salonId, code])
+  @@unique([salonId, id])
+  @@map("roles")
+}
+model Permission {
+  id String @id @default(uuid()) @db.Uuid
+  code String @unique @db.VarChar(100)
+  description String @db.VarChar(200)
+  roles RolePermission[]
+  overrides UserPermissionOverride[]
+  @@map("permissions")
+}
+model UserRole {
+  salonId String @map("salon_id") @db.Uuid
+  membershipId String @map("membership_id") @db.Uuid
+  roleId String @map("role_id") @db.Uuid
+  membership SalonUser @relation(fields: [salonId, membershipId], references: [salonId, id], onDelete: Restrict)
+  role Role @relation(fields: [salonId, roleId], references: [salonId, id], onDelete: Restrict)
+  @@id([membershipId, roleId])
+  @@map("user_roles")
+}
+model RolePermission {
+  roleId String @map("role_id") @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+  role Role @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+model UserPermissionOverride {
+  membershipId String @map("membership_id") @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+  effect PermissionEffect
+  membership SalonUser @relation(fields: [membershipId], references: [id], onDelete: Restrict)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+  @@id([membershipId, permissionId])
+  @@map("user_permission_overrides")
+}
+model UserSession {
+  id String @id @default(uuid()) @db.Uuid
+  tokenHash String @unique @map("token_hash") @db.Char(64)
+  userId String @map("user_id") @db.Uuid
+  membershipId String @map("membership_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(3)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  membership SalonUser @relation(fields: [membershipId, userId], references: [id, userId], onDelete: Restrict, onUpdate: NoAction, map: "session_user_membership_fk")
+  @@index([expiresAt])
+  @@map("user_sessions")
+}
+model Client {
+  orders SalonOrder[]
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  name String @db.VarChar(150)
+  phone String? @db.VarChar(30)
+  whatsapp String? @db.VarChar(30)
+  email String? @db.VarChar(254)
+  birthDate DateTime? @map("birth_date") @db.Date
+  notes String? @db.VarChar(2000)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdBy String @map("created_by") @db.Uuid
+  updatedBy String @map("updated_by") @db.Uuid
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+  deletedBy String? @map("deleted_by") @db.Uuid
+  deletionReason String? @map("deletion_reason") @db.VarChar(500)
+  salon Salon @relation(fields: [salonId], references: [id], onDelete: Restrict)
+  @@unique([salonId, id])
+  creator SalonUser @relation("ClientCreator", fields: [salonId, createdBy], references: [salonId, id], onDelete: Restrict, onUpdate: NoAction, map: "clients_created_actor_fk")
+  updater SalonUser @relation("ClientUpdater", fields: [salonId, updatedBy], references: [salonId, id], onDelete: Restrict, onUpdate: NoAction, map: "clients_updated_actor_fk")
+  deleter SalonUser? @relation("ClientDeleter", fields: [salonId, deletedBy], references: [salonId, id], onDelete: Restrict, onUpdate: NoAction, map: "clients_deleted_actor_fk")
+  @@index([salonId, deletedAt, name])
+  appointments Appointment[]
+  @@map("clients")
+}
+model AuditLog {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  actorId String @map("actor_id") @db.Uuid
+  action String @db.VarChar(100)
+  entity String @db.VarChar(100)
+  entityId String @map("entity_id") @db.Uuid
+  before Json?
+  after Json?
+  reason String? @db.VarChar(500)
+  requestId String @map("request_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  salon Salon @relation(fields: [salonId], references: [id], onDelete: Restrict)
+  actor SalonUser @relation(fields: [salonId, actorId], references: [salonId, id], onDelete: Restrict)
+  @@index([salonId, createdAt])
+  @@index([salonId, entity, entityId])
+  @@map("audit_logs")
+}
+
+model Professional {
+  visits Visit[]
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  membershipId String? @map("membership_id") @db.Uuid
+  name String @db.VarChar(150)
+  phone String? @db.VarChar(30)
+  email String? @db.VarChar(254)
+  specialty String? @db.VarChar(150)
+  notes String? @db.VarChar(2000)
+  active Boolean @default(true)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  salon Salon @relation(fields: [salonId], references: [id], onDelete: Restrict)
+  workPeriods WorkPeriod[]
+  availabilityBlocks AvailabilityBlock[]
+  performedServices ProfessionalService[]
+  membership SalonUser? @relation(fields: [salonId, membershipId], references: [salonId, id], onDelete: Restrict, onUpdate: NoAction)
+  @@unique([salonId, id])
+  @@unique([salonId, membershipId])
+  @@index([salonId, active, name])
+  appointments Appointment[]
+  @@map("professionals")
+}
+
+model Service {
+  visitItems VisitItem[]
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  name String @db.VarChar(150)
+  description String? @db.VarChar(2000)
+  durationMinutes Int @map("duration_minutes")
+  price Decimal @db.Decimal(14, 2)
+  active Boolean @default(true)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  salon Salon @relation(fields: [salonId], references: [id], onDelete: Restrict)
+  @@unique([salonId, id])
+  @@index([salonId, active, name])
+  professionals ProfessionalService[]
+  appointmentItems AppointmentService[]
+  @@map("services")
+}
+
+model WorkPeriod {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  professionalId String @map("professional_id") @db.Uuid
+  weekday Int
+  startMinute Int @map("start_minute")
+  endMinute Int @map("end_minute")
+  professional Professional @relation(fields: [salonId, professionalId], references: [salonId, id], onDelete: Restrict)
+  @@index([salonId, professionalId, weekday])
+  @@map("work_periods")
+}
+model AvailabilityBlock {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  professionalId String @map("professional_id") @db.Uuid
+  startsAt DateTime @map("starts_at") @db.Timestamptz(3)
+  endsAt DateTime @map("ends_at") @db.Timestamptz(3)
+  description String @db.VarChar(200)
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(3)
+  version Int @default(1)
+  professional Professional @relation(fields: [salonId, professionalId], references: [salonId, id], onDelete: Restrict)
+  @@index([salonId, professionalId, cancelledAt, startsAt])
+  @@map("availability_blocks")
+}
+model ProfessionalService {
+  salonId String @map("salon_id") @db.Uuid
+  professionalId String @map("professional_id") @db.Uuid
+  serviceId String @map("service_id") @db.Uuid
+  professional Professional @relation(fields: [salonId, professionalId], references: [salonId, id], onDelete: Restrict)
+  service Service @relation(fields: [salonId, serviceId], references: [salonId, id], onDelete: Restrict)
+  @@id([professionalId, serviceId])
+  @@index([salonId, serviceId])
+  @@map("professional_services")
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  ARRIVED
+  COMPLETED
+  NO_SHOW
+  CANCELLED
+}
+model Appointment {
+  visit Visit?
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  professionalId String @map("professional_id") @db.Uuid
+  clientId String @map("client_id") @db.Uuid
+  locationId String @map("location_id") @db.Uuid
+  startsAt DateTime @map("starts_at") @db.Timestamptz(3)
+  endsAt DateTime @map("ends_at") @db.Timestamptz(3)
+  status AppointmentStatus @default(SCHEDULED)
+  notes String? @db.VarChar(2000)
+  version Int @default(1)
+  requestKey String @map("request_key") @db.Uuid
+  requestHash String @map("request_hash") @db.Char(64)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  professional Professional @relation(fields: [salonId, professionalId], references: [salonId, id], onDelete: Restrict)
+  client Client @relation(fields: [salonId, clientId], references: [salonId, id], onDelete: Restrict)
+  location Location @relation(fields: [salonId, locationId], references: [salonId, id], onDelete: Restrict)
+  services AppointmentService[]
+  @@unique([salonId, id])
+  @@unique([salonId, requestKey])
+  @@index([salonId, professionalId, startsAt, endsAt])
+  @@index([salonId, clientId])
+  @@map("appointments")
+}
+model AppointmentService {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  appointmentId String @map("appointment_id") @db.Uuid
+  serviceId String @map("service_id") @db.Uuid
+  position Int
+  name String @db.VarChar(150)
+  durationMinutes Int @map("duration_minutes")
+  price Decimal @db.Decimal(14, 2)
+  appointment Appointment @relation(fields: [salonId, appointmentId], references: [salonId, id], onDelete: Restrict)
+  service Service @relation(fields: [salonId, serviceId], references: [salonId, id], onDelete: Restrict)
+  @@unique([appointmentId, position])
+  @@map("appointment_services")
+}
+
+model Supplier {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  name String @db.VarChar(150)
+  phone String? @db.VarChar(30)
+  email String? @db.VarChar(254)
+  notes String? @db.VarChar(2000)
+  active Boolean @default(true)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  movements StockMovement[]
+  @@unique([salonId, id])
+  @@index([salonId, active, name])
+  @@map("suppliers")
+}
+model Product {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  name String @db.VarChar(150)
+  description String? @db.VarChar(2000)
+  baseUnit String @map("base_unit") @db.VarChar(2)
+  packages Json
+  minimum Decimal @db.Decimal(18, 6)
+  balance Decimal @default(0) @db.Decimal(18, 6)
+  active Boolean @default(true)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  movements StockMovement[]
+  @@unique([salonId, id])
+  @@index([salonId, active, name])
+  @@map("products")
+}
+model StockMovement {
+  consumption VisitConsumption?
+  @@unique([salonId, id])
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  productId String @map("product_id") @db.Uuid
+  supplierId String? @map("supplier_id") @db.Uuid
+  actorId String @map("actor_id") @db.Uuid
+  kind String @db.VarChar(10)
+  quantity Decimal @db.Decimal(18, 6)
+  delta Decimal @db.Decimal(18, 6)
+  balanceBefore Decimal @map("balance_before") @db.Decimal(18, 6)
+  balanceAfter Decimal @map("balance_after") @db.Decimal(18, 6)
+  unitCost Decimal? @map("unit_cost") @db.Decimal(18, 6)
+  productName String @map("product_name") @db.VarChar(150)
+  supplierName String? @map("supplier_name") @db.VarChar(150)
+  baseUnit String @map("base_unit") @db.VarChar(2)
+  packageSnapshot Json? @map("package_snapshot")
+  reason String @db.VarChar(500)
+  requestKey String @map("request_key") @db.Uuid
+  requestHash String @map("request_hash") @db.Char(64)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  product Product @relation(fields: [salonId, productId], references: [salonId, id], onDelete: Restrict)
+  supplier Supplier? @relation(fields: [salonId, supplierId], references: [salonId, id], onDelete: Restrict)
+  @@unique([salonId, requestKey])
+  @@index([salonId, productId, createdAt])
+  @@map("stock_movements")
+}
+
+model SalonOrder {
+  sale OrderSale?
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  clientId String @map("client_id") @db.Uuid
+  clientName String @map("client_name") @db.VarChar(150)
+  createdBy String @map("created_by") @db.Uuid
+  status String @default("OPEN") @db.VarChar(12)
+  discount Decimal @default(0) @db.Decimal(14,2)
+  subtotal Decimal @default(0) @db.Decimal(14,2)
+  total Decimal @default(0) @db.Decimal(14,2)
+  notes String? @db.VarChar(2000)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  readyAt DateTime? @map("ready_at") @db.Timestamptz(3)
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(3)
+  client Client @relation(fields:[salonId,clientId],references:[salonId,id],onDelete:Restrict)
+  visits Visit[]
+  @@unique([salonId,id])
+  @@index([salonId,status,createdAt])
+  @@map("salon_orders")
+}
+model Visit {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  orderId String @map("order_id") @db.Uuid
+  clientId String @map("client_id") @db.Uuid
+  professionalId String @map("professional_id") @db.Uuid
+  professionalName String @map("professional_name") @db.VarChar(150)
+  appointmentId String? @map("appointment_id") @db.Uuid
+  status String @default("WAITING") @db.VarChar(12)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  startedAt DateTime? @map("started_at") @db.Timestamptz(3)
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(3)
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(3)
+  order SalonOrder @relation(fields:[salonId,orderId],references:[salonId,id],onDelete:Restrict)
+  professional Professional @relation(fields:[salonId,professionalId],references:[salonId,id],onDelete:Restrict)
+  appointment Appointment? @relation(fields:[salonId,appointmentId],references:[salonId,id],onDelete:Restrict)
+  items VisitItem[]
+  consumptions VisitConsumption[]
+  @@unique([salonId,id])
+  @@unique([salonId,appointmentId])
+  @@index([salonId,professionalId,status,createdAt])
+  @@map("visits")
+}
+model VisitItem {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  visitId String @map("visit_id") @db.Uuid
+  serviceId String @map("service_id") @db.Uuid
+  name String @db.VarChar(150)
+  durationMinutes Int @map("duration_minutes")
+  price Decimal @db.Decimal(14,2)
+  position Int
+  visit Visit @relation(fields:[salonId,visitId],references:[salonId,id],onDelete:Restrict)
+  service Service @relation(fields:[salonId,serviceId],references:[salonId,id],onDelete:Restrict)
+  @@unique([visitId,position])
+  @@map("visit_items")
+}
+model VisitConsumption {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  visitId String @map("visit_id") @db.Uuid
+  movementId String @map("movement_id") @db.Uuid
+  unitCost Decimal? @map("unit_cost") @db.Decimal(18,6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  visit Visit @relation(fields:[salonId,visitId],references:[salonId,id],onDelete:Restrict)
+  movement StockMovement @relation(fields:[salonId,movementId],references:[salonId,id],onDelete:Restrict)
+  @@unique([salonId,movementId])
+  @@index([salonId,visitId])
+  @@map("visit_consumptions")
+}
+model OrderCommand {
+  salonId String @map("salon_id") @db.Uuid
+  requestKey String @map("request_key") @db.Uuid
+  actorId String @map("actor_id") @db.Uuid
+  hash String @db.Char(64)
+  targetId String @map("target_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  @@id([salonId,requestKey])
+  @@map("order_commands")
+}
+
+model OrderSale {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  orderId String @map("order_id") @db.Uuid
+  actorId String @map("actor_id") @db.Uuid
+  total Decimal @db.Decimal(14,2)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  order SalonOrder @relation(fields:[salonId,orderId],references:[salonId,id],onDelete:Restrict)
+  payments Payment[]
+  void SaleVoid?
+  @@unique([salonId,orderId])
+  @@index([salonId,createdAt])
+  @@map("order_sales")
+}
+model Payment {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  orderId String @map("order_id") @db.Uuid
+  actorId String @map("actor_id") @db.Uuid
+  method String @db.VarChar(10)
+  amount Decimal @db.Decimal(14,2)
+  tendered Decimal @db.Decimal(14,2)
+  change Decimal @db.Decimal(14,2)
+  reference String? @db.VarChar(150)
+  reason String @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  sale OrderSale @relation(fields:[salonId,orderId],references:[salonId,orderId],onDelete:Restrict)
+  refunds PaymentRefund[]
+  @@unique([salonId,id])
+  @@index([salonId,createdAt])
+  @@map("payments")
+}
+model PaymentRefund {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  paymentId String @map("payment_id") @db.Uuid
+  actorId String @map("actor_id") @db.Uuid
+  amount Decimal @db.Decimal(14,2)
+  reference String? @db.VarChar(150)
+  reason String @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  payment Payment @relation(fields:[salonId,paymentId],references:[salonId,id],onDelete:Restrict)
+  @@index([salonId,createdAt])
+  @@map("payment_refunds")
+}
+model SaleVoid {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  orderId String @map("order_id") @db.Uuid
+  actorId String @map("actor_id") @db.Uuid
+  total Decimal @db.Decimal(14,2)
+  reason String @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  sale OrderSale @relation(fields:[salonId,orderId],references:[salonId,orderId],onDelete:Restrict)
+  @@unique([salonId,orderId])
+  @@index([salonId,createdAt])
+  @@map("sale_voids")
+}

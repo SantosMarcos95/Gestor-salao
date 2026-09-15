@@ -1,0 +1,15 @@
+[Unit]
+Description=Verificar atraso e integridade do backup local
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/salao-backup-check.env
+ExecStart=/usr/bin/node /opt/salao-gestao/scripts/backup-job.mjs check
+User=salao-backup
+Group=salao-backup
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+TimeoutStartSec=15m
