@@ -2,6 +2,8 @@
 
 ## Onde paramos
 
+**Publicação GitHub concluída:** autenticação via GitHub CLI confirmada para `SantosMarcos95`; commits `0e86f90`, `9797416` e `a7f854c` enviados com sucesso para `origin/main` em `https://github.com/SantosMarcos95/Gestor-salao.git`. Nenhum `.env`, `.local`, dump ou chave foi incluído. Próximo passo: importar o repositório na Vercel e configurar variáveis de ambiente/banco de teste; ainda sem deploy ou migração de dados reais.
+
 **Conexão GitHub confirmada:** plugin instalado e autenticação aceita; identidade `SantosMarcos95` verificada. Consulta ao repositório confirma conta com push/admin e repositório público vazio, mas escrita pelo plugin (`create_file` de README) recusada com HTTP 403 `Resource not accessible by integration`. Autenticação do plugin não habilitou Git HTTPS: push continua sem credencial. Nenhum arquivo publicado. Próximo passo: autenticar Git pelo GitHub CLI no terminal (gh ainda não instalado) ou ajustar concessão de escrita da integração. Não repetir instalação do plugin nem dizer que conta está desconectada. `/tmp/salao-publish.json` contém somente os 186 arquivos rastreados para preparação do envio; não inclui .env/.local.
 
 **Resultado do envio:** `origin` configurado para `SantosMarcos95/Gestor-salao`; commit de continuidade `9797416` criado. `git push -u origin main` falhou por ausência de autenticação HTTPS (`could not read Username`). Nada enviado. Próximo passo: autenticar GitHub neste ambiente por fluxo seguro e repetir push, verificar hash remoto; depois preparar Vercel. Não pedir tokens/senhas no chat. Esta nota ainda não foi commitada.
