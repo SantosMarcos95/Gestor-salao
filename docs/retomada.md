@@ -2,6 +2,10 @@
 
 ## Onde paramos
 
+**Destino GitHub confirmado pelo usuário:** `https://github.com/SantosMarcos95/Gestor-salao.git`. Consulta remota bem-sucedida sem branches/tags retornados; repositório vazio nesta verificação. Preparando `origin` e envio de `main`; resultado do push ainda pendente. Dados locais e credenciais continuam excluídos.
+
+**Salvamento Git concluído:** commit local inicial `0e86f90` criado na branch `main`, com 186 arquivos. `git diff --cached --check` passou após remover linha vazia final de unidade systemd. Não houve mudança funcional nem repetição dos testes nesta etapa. Push e deploy dependem das conexões GitHub/Vercel e destino solicitados. Esta atualização de continuidade é posterior ao commit inicial e deve acompanhar o próximo commit.
+
 **Trabalho atual — publicação solicitada:** usuário pediu envio ao próprio GitHub e hospedagem na Vercel. Git inicializado na branch `main` em 15/09 (o diretório antes vazio agora é repositório válido). `.gitignore` reforçado para `.vercel`, dumps e chaves. Inventário inicial de 186 arquivos revisado com busca por padrões comuns de tokens/chaves sem ocorrências; `.env` e `.local` excluídos. Plugins GitHub/Vercel encontrados mas não conectados; solicitadas conexões e link do repositório (ou usuário; preferência proposta por privado `salao-gestao`). Próximo passo: confirmar conexões/destino, enviar código, configurar implantação compatível com frontend React/Vite e API NestJS, prover banco de teste e validar login. Nenhum push/deploy ou banco remoto configurado até este marco.
 
 **Decisão mais recente — Vercel Hobby inicialmente:** usuário escolheu plano gratuito e pretende migrar ao Pro quando iniciar comercialização. Planejar Hobby para desenvolvimento/demonstração não comercial; esclarecido que operação real do salão também deve ser considerada antes da migração ao Pro, mesmo sem venda do software. Próximo trabalho: preparar e validar configuração da aplicação/API para Vercel com dados de teste. Nenhum deploy, conta criada ou migração de dados reais autorizado nesta decisão. Neon Free e backup criptografado no Drive seguem propostas pendentes de configuração.
