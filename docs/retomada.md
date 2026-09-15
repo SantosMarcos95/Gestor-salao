@@ -10,6 +10,7 @@
 - Commit `802c79a` criado e enviado com sucesso para `origin/main`; a consulta independente posterior ao remoto foi bloqueada por DNS do sandbox, mas o `git push` confirmou `main -> main`. Próximo passo: aguardar o deploy automático da Vercel, testar `/api/health` e a tela/login. Se o projeto Vercel estiver com Root Directory diferente da raiz, ajustar para a raiz do repositório.
 - Primeiro build Vercel com a raiz corrigida falhou no bundling da função: o import de `api/index.ts` apontava para `apps/api/src` e o compilador da Vercel reinterpretou decorators NestJS como decorators padrão. Corrigido para importar `apps/api/dist/bootstrap.js`, gerado pelo build TypeScript com `experimentalDecorators`; `npm run vercel-build` passou novamente. Correção ainda precisa ser enviada e redeployada.
 - Após o deploy `b2168bf`, a interface pública respondeu HTTP 200, mas `/api/health` respondeu 404. Adicionadas rotas explícitas em `vercel.json` para encaminhar `/api` e `/api/*` a `api/index.ts`, mantendo arquivos estáticos e fallback do React. Novo deploy pendente.
+- Deploy posterior com o commit `073dcfd` foi confirmado pelo usuário como funcionando: interface pública e API Vercel acessíveis, após validação de `/api/health`. Falta apenas validar login com o banco remoto e os fluxos principais; nenhum dado real foi migrado.
 
 ## Onde paramos
 
