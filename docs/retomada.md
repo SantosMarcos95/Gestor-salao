@@ -1,5 +1,9 @@
 # Retomada — atualizada em 16/09/2026
 
+## Agendamento de corte com Luzia — vínculo pendente
+
+Usuário relatou não conseguir vincular serviço à profissional Luzia para agendar corte. Inspeção do fluxo confirmou que o vínculo é em Disponibilidade e serviços → Serviços realizados, exige `profissionais.gerenciar`, seleção por checkbox, motivo de ao menos 5 caracteres e Salvar serviços. Consulta somente leitura ao Neon confirmou Luzia ativa, zero serviços vinculados e um serviço de corte ativo no catálogo. Nenhum vínculo ou agendamento foi alterado por esta investigação. Orientar a fazer o vínculo pela interface; se houver erro, solicitar a mensagem exata.
+
 ## Campo de comissão não visível — diagnóstico
 
 Usuário informou que Comissão (%) não aparece em Editar profissional. Código confirma que o campo só aparece quando `/commissions/context` retorna `all: true`, concedido ao perfil protegido `ROLE_ADMIN`. Consulta agregada no Neon confirmou um perfil protegido e uma atribuição, sem ler dados pessoais; não comprova qual conta o usuário usou. Interface ajustada para mostrar carregamento, erro com nova tentativa ou aviso claro de que somente Administrador configura o percentual. Typecheck e build aprovados; validação autenticada da conta do usuário ainda pendente. Orientar o usuário a confirmar se está logado na conta com perfil Administrador em Acessos > Usuários; não alterar papéis remotamente sem identificar a conta.
