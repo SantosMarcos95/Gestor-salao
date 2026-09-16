@@ -1,8 +1,8 @@
 # Retomada — atualizada em 16/09/2026
 
-## Comanda direta pela agenda — implementação validada localmente
+## Comanda direta pela agenda — publicada; validação autenticada pendente
 
-Usuário pediu botão no detalhe de cliente agendado para abrir comanda. Detalhe da agenda agora oferece “Abrir comanda” quando há permissões e agendamento elegível, criando comanda e importando o serviço histórico na mesma transação; se já vinculado, oferece “Ver comanda”. API usa lock no agendamento e chave idempotente para impedir duplicação por cliques/reenvios concorrentes, respeitando salão, escopo da agenda e permissões de comanda. Sem migration. Typecheck, build e suíte completa API/navegador passaram em banco PostgreSQL isolado; teste novo cobriu permissão, reenvio simultâneo e vínculo único. Ainda falta publicação e verificação pública; nenhum dado real foi alterado.
+Usuário pediu botão no detalhe de cliente agendado para abrir comanda. Detalhe da agenda agora oferece “Abrir comanda” quando há permissões e agendamento elegível, criando comanda e importando o serviço histórico na mesma transação; se já vinculado, oferece “Ver comanda”. API usa lock no agendamento e chave idempotente para impedir duplicação por cliques/reenvios concorrentes, respeitando salão, escopo da agenda e permissões de comanda. Sem migration. Typecheck, build e suíte completa API/navegador passaram em banco PostgreSQL isolado; teste novo cobriu permissão, reenvio simultâneo e vínculo único. Commit `dd46d80` enviado; status Vercel success, health público 200, rota nova protegida sem sessão e bundle público atualizado com o novo texto/endpoint. Nenhum dado real foi alterado; validação autenticada com um agendamento real cabe ao usuário.
 
 ## Venda de produtos publicada — validação autenticada pendente
 

@@ -2,7 +2,7 @@
 
 ## Status desta iteração
 
-Comanda direta pela agenda solicitada em 16/09: botão no detalhe do agendamento cria comanda com o serviço importado de forma transacional; agendamento já vinculado mostra acesso à comanda. Implementação sem migration validada por typecheck, build e suíte completa API/navegador em banco isolado. Publicação e verificação pública pendentes.
+Comanda direta pela agenda solicitada em 16/09: botão no detalhe do agendamento cria comanda com o serviço importado de forma transacional; agendamento já vinculado mostra acesso à comanda. Implementação sem migration validada por typecheck, build e suíte completa API/navegador em banco isolado. Código publicado; health e bundle público confirmados, validação autenticada pelo usuário pendente.
 
 Venda de produtos na comanda solicitada em 16/09: preço por unidade vendida, itens históricos, baixa transacional no pagamento, relatório de vendas em estoque e comissão restrita aos serviços. Migration `202609160002_product_sales` validada em PostgreSQL isolado e aplicada no Neon. Suíte completa API/navegador, build, typecheck, 30 testes unitários e formatação aprovados. Código publicado na Vercel, smoke público sem sessão aprovado; validação autenticada de cadastro/venda real pendente. Regras em `docs/venda-produtos.md`.
 
