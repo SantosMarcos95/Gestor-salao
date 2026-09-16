@@ -15,6 +15,10 @@ export function ProfessionalDialog({
   saved: () => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
+  const commissionAccess = useQuery({
+    queryKey: ['commission-context'],
+    queryFn: () => api<{ all: boolean }>('/commissions/context'),
+  });
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -41,6 +45,9 @@ export function ProfessionalDialog({
           specialty: data.get('specialty'),
           notes: data.get('notes'),
           membershipId: selected?.id ?? null,
+          ...(commissionAccess.data?.all
+            ? { commissionRate: String(data.get('commissionRate')).replace(',', '.') }
+            : {}),
           reason: data.get('reason'),
           ...(professional ? { version: professional.version } : {}),
         }),
@@ -109,6 +116,25 @@ export function ProfessionalDialog({
               defaultValue={professional?.notes ?? ''}
             />
           </label>
+          {commissionAccess.data?.all && (
+            <label>
+              Comissão (%)
+              <input
+                name="commissionRate"
+                aria-label="Comissão (%)"
+                type="number"
+                min="0"
+                max="100"
+                step="0.01"
+                required
+                defaultValue={professional?.commissionRate ?? '0'}
+              />
+              <small>
+                Sobre o serviço após desconto, quando o cliente pagar. Alterações valem para novas
+                vendas; o histórico permanece.
+              </small>
+            </label>
+          )}
           <details>
             <summary>Usuário vinculado: {selected ? selected.user.name : 'nenhum'}</summary>
             <p className="muted">

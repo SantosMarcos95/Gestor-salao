@@ -18,6 +18,7 @@ import { AuthRequest, parse } from '../common';
 import { Require, SessionGuard } from '../auth/auth';
 import { catalogQuery, catalogStatus, professionalInput, professionalUpdate } from './validation';
 import { activeFilter, catalogAudit } from './shared';
+import { requireAdministrator } from '../finance/commissions';
 
 const include = {
   membership: {
@@ -102,6 +103,7 @@ export class ProfessionalsController {
     const { reason, ...data } = parse(professionalInput, body);
     return this.db.$transaction(async (tx) => {
       await this.checkMembership(tx, req.identity.salonId, data.membershipId);
+      if (data.commissionRate !== undefined) await requireAdministrator(tx, req);
       const after = await tx.professional.create({
         data: { ...data, salonId: req.identity.salonId },
         include,
@@ -119,6 +121,9 @@ export class ProfessionalsController {
         include,
       });
       if (!before) throw new NotFoundException('Profissional não encontrado.');
+      if (data.membershipId !== before.membershipId) await requireAdministrator(tx, req);
+      if (data.commissionRate !== undefined && !before.commissionRate.equals(data.commissionRate))
+        await requireAdministrator(tx, req);
       if (data.membershipId !== before.membershipId)
         await this.checkMembership(tx, req.identity.salonId, data.membershipId);
       const result = await tx.professional.updateMany({

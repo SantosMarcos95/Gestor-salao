@@ -28,8 +28,8 @@ export function ProfessionalsPage() {
     setChanging(null);
     setNotice('Profissional salvo. Alteração registrada na auditoria.');
     await Promise.all(
-      ['professionals', 'professional-users', 'audit'].map((key) =>
-        cache.invalidateQueries({ queryKey: [key] }),
+      ['professionals', 'professional-users', 'commission-context', 'commissions', 'audit'].map(
+        (key) => cache.invalidateQueries({ queryKey: [key] }),
       ),
     );
   }

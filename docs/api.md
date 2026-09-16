@@ -1,5 +1,7 @@
 # API inicial
 
+Comissões por profissional e operações de caixa: [regras, endpoints e publicação](comissoes-caixa.md).
+
 Base `/api`. Corpo JSON. Autenticação por cookie `salao_session`. Alterações exigem `Origin` igual a `WEB_ORIGIN`. CORS credenciado para uma única origem. Respostas não são cacheadas.
 
 | Método | Rota                           | Autorização                                      | Função                                                 |

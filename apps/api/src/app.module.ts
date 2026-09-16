@@ -2,6 +2,8 @@ import { Controller, Get, Global, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { Database } from './database';
+import { CashController } from './finance/cash';
+import { CommissionsController } from './finance/commissions';
 import { AuthController, AuthService, SessionGuard } from './auth/auth';
 import { ClientsController } from './clients/clients';
 import { AuditController } from './audit/audit';
@@ -46,6 +48,8 @@ class AccessModule {}
   imports: [AuthModule],
   controllers: [
     ProfessionalsController,
+    CashController,
+    CommissionsController,
     ServicesController,
     ProductsController,
     OrdersController,

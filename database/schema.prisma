@@ -1,6 +1,63 @@
 generator client {
   provider = "prisma-client-js"
 }
+
+model CommissionBasis {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  orderId String @map("order_id") @db.Uuid
+  professionalId String @map("professional_id") @db.Uuid
+  itemId String @unique @map("item_id") @db.Uuid
+  professionalName String @map("professional_name") @db.VarChar(150)
+  serviceName String @map("service_name") @db.VarChar(150)
+  rate Decimal @db.Decimal(5,2)
+  base Decimal @db.Decimal(14,2)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  @@unique([salonId,id])
+  @@index([salonId,orderId])
+  @@map("commission_bases")
+}
+model CommissionEntry {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  basisId String @map("basis_id") @db.Uuid
+  eventId String @map("event_id") @db.Uuid
+  base Decimal @db.Decimal(14,2)
+  amount Decimal @db.Decimal(14,2)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  @@unique([basisId,eventId])
+  @@index([salonId,createdAt])
+  @@map("commission_entries")
+}
+model CashSession {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  openedBy String @map("opened_by") @db.Uuid
+  closedBy String? @map("closed_by") @db.Uuid
+  opening Decimal @db.Decimal(14,2)
+  counted Decimal? @db.Decimal(14,2)
+  expected Decimal? @db.Decimal(14,2)
+  difference Decimal? @db.Decimal(14,2)
+  closingReason String? @map("closing_reason") @db.VarChar(500)
+  openedAt DateTime @default(now()) @map("opened_at") @db.Timestamptz(3)
+  closedAt DateTime? @map("closed_at") @db.Timestamptz(3)
+  @@unique([salonId,id])
+  @@index([salonId,openedAt])
+  @@map("cash_sessions")
+}
+model CashMovement {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  sessionId String @map("session_id") @db.Uuid
+  actorId String @map("actor_id") @db.Uuid
+  kind String @db.VarChar(15)
+  amount Decimal @db.Decimal(14,2)
+  sourceId String? @unique @map("source_id") @db.Uuid
+  reason String @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  @@index([salonId,sessionId,createdAt])
+  @@map("cash_movements")
+}
 datasource db {
   provider = "postgresql"
   url = env("DATABASE_URL")
@@ -181,6 +238,7 @@ model AuditLog {
 }
 
 model Professional {
+  commissionRate Decimal @default(0) @map("commission_rate") @db.Decimal(5,2)
   visits Visit[]
   id String @id @default(uuid()) @db.Uuid
   salonId String @map("salon_id") @db.Uuid

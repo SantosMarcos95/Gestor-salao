@@ -23,6 +23,8 @@ import { testInventory, testInventoryBrowser } from './inventory.mjs';
 import { testPasswords } from './passwords.mjs';
 import { testAvailability, testAvailabilityBrowser } from './availability.mjs';
 import { testCatalog, testCatalogBrowser } from './catalog.mjs';
+import { testCommissionsCash } from './commissions-cash.mjs';
+import { testCommissionsCashBrowser } from './commissions-cash-browser.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const directory = mkdtempSync(join(tmpdir(), 'salao-test-'));
@@ -997,6 +999,17 @@ try {
   });
   await testExports({ request, prisma, cookie, proCookie: proLogin.cookie, proMember, salonId });
   const recoveryBaseline = [];
+  await testCommissionsCash({
+    request,
+    prisma,
+    cookie,
+    proCookie: proLogin.cookie,
+    proMember,
+    salonId,
+    otherMember,
+  });
+  if (process.env.BROWSER_TEST === '1')
+    await testCommissionsCashBrowser({ cookie, proCookie: proLogin.cookie, root });
   if (process.env.BACKUP_TEST === '1') {
     for (const path of recoveryPaths) {
       const response = await request(path, { cookie });

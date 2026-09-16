@@ -14,6 +14,8 @@ import { AvailabilityPage } from '../pages/availability/AvailabilityPage';
 import { AppointmentsPage } from '../pages/appointments/AppointmentsPage';
 import { ReportsPage } from '../pages/reports/ReportsPage';
 import { FinancePage } from '../pages/finance/FinancePage';
+import { CashPage } from '../pages/finance/CashPage';
+import { CommissionsPage } from '../pages/finance/CommissionsPage';
 import { OrdersPage } from '../pages/orders/OrdersPage';
 import { OrderPage } from '../pages/orders/OrderPage';
 import { VisitsPage } from '../pages/orders/VisitsPage';
@@ -85,6 +87,16 @@ export function SalonLayout({ profile }: { profile: Profile }) {
             <NavLink to="/financeiro">
               <LayoutDashboard size={19} />
               Financeiro
+            </NavLink>
+          )}
+          <NavLink to="/meu-financeiro">
+            <LayoutDashboard size={19} />
+            Meu financeiro / comissões
+          </NavLink>
+          {can('caixa.gerenciar') && (
+            <NavLink to="/caixa">
+              <LayoutDashboard size={19} />
+              Caixa
             </NavLink>
           )}
           {canOrders && (
@@ -190,6 +202,14 @@ export function SalonLayout({ profile }: { profile: Profile }) {
         )}
         <main className="content">
           <Routes>
+            <Route
+              path="/meu-financeiro"
+              element={<CommissionsPage key={profile.membershipId} />}
+            />
+            <Route
+              path="/caixa"
+              element={can('caixa.gerenciar') ? <CashPage /> : <Navigate to="/" replace />}
+            />
             <Route
               path="/financeiro"
               element={

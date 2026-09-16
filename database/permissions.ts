@@ -47,6 +47,7 @@ export const permissionCodes = [
   'estoque.permitir_negativo',
   'financeiro.visualizar',
   'financeiro.gerenciar',
+  'caixa.gerenciar',
   'pagamentos.registrar',
   'pagamentos.estornar',
   'profissionais.gerenciar',

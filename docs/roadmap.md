@@ -2,6 +2,8 @@
 
 ## Status desta iteração
 
+Entrega local validada em 16/09: comissões individuais no pagamento sobre serviços após desconto, percentual por profissional definido pelo administrador, financeiro próprio e abertura/fechamento/sangria de caixa. Código local, suíte completa API/navegador e revisão visual aprovados. Migration criada e testada em banco isolado, não aplicada no Neon. Publicação depende de conexão remota privada para aplicar schema antes do deploy. Regras e publicação em `docs/comissoes-caixa.md`. Backup e investigação da lentidão inicial adiados durante esta entrega.
+
 Infraestrutura em 15/09: usuário escolheu Vercel Hobby inicialmente e pretende migrar para Pro ao comercializar. A configuração de deploy foi preparada para um projeto Vercel na raiz do monorepo, com frontend estático e API NestJS como função; a variável de ambiente foi criada pelo usuário, mas o nome/valor não são registrados aqui. Ainda é necessário confirmar no painel as variáveis obrigatórias e o resultado do primeiro deploy. Neon Free e Drive continuam propostos, ainda não configurados. Backup agendado na Vercel permanece pendente.
 
 Fundação implementada e primeiros fluxos de autenticação/clientes/auditoria disponíveis. O cadastro básico de clientes está funcional; não equivale ao módulo completo com histórico de atendimentos. O controle de acesso no servidor está implementado; a administração visual de usuários, perfis e permissões individuais está disponível, com proteção do último administrador e auditoria. Troca de senha e recuperação assistida por administrador estão disponíveis, com revogação de sessões e troca obrigatória da senha provisória. Recuperação por e-mail, alteração de dados pessoais e gestão de sessões por dispositivo ainda serão desenvolvidas.

@@ -1,5 +1,6 @@
 export type UserOption = { id: string; user: { name: string; email: string } };
 export type Professional = {
+  commissionRate: string;
   id: string;
   name: string;
   phone: string | null;

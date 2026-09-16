@@ -28,6 +28,8 @@ import {
   requirePermission,
 } from '../orders/rules';
 import { checkoutInput, preparePayments, refundInput, voidInput } from './rules';
+import { snapshotCommissions, syncCommissions } from './commissions';
+import { recordCash } from './cash';
 
 export const saleInclude = {
   payments: {
@@ -144,6 +146,7 @@ export class PaymentsController {
             saleId: sale.id,
             total: order.total,
           });
+          await snapshotCommissions(tx, order.salonId, id);
         }
         for (const line of payments) {
           const payment = await tx.payment.create({
@@ -155,6 +158,8 @@ export class PaymentsController {
               reason: input.reason,
             },
           });
+          if (payment.method === 'CASH')
+            await recordCash(tx, req, 'PAYMENT', payment.amount.toFixed(2), payment.id);
           await catalogAudit(
             tx,
             req,
@@ -165,6 +170,7 @@ export class PaymentsController {
             payment,
           );
         }
+        await syncCommissions(tx, order.salonId, id, input.requestKey);
         const after = await tx.salonOrder.update({
           where: { id },
           data: { status: 'CLOSED', version: { increment: 1 } },
@@ -219,6 +225,9 @@ export class PaymentsController {
             reason: input.reason,
           },
         });
+        if (payment.method === 'CASH')
+          await recordCash(tx, req, 'REFUND', refund.amount.toFixed(2), refund.id);
+        await syncCommissions(tx, order.salonId, id, input.requestKey);
         await tx.salonOrder.update({
           where: { id },
           data: { status: 'DUE', version: { increment: 1 } },
@@ -269,6 +278,8 @@ export class PaymentsController {
                 reason: input.reason,
               },
             });
+            if (p.method === 'CASH')
+              await recordCash(tx, req, 'REFUND', refund.amount.toFixed(2), refund.id);
             await catalogAudit(
               tx,
               req,
@@ -280,6 +291,7 @@ export class PaymentsController {
             );
           }
         }
+        await syncCommissions(tx, order.salonId, id, input.requestKey);
         const cancelled = await tx.saleVoid.create({
           data: {
             salonId: order.salonId,

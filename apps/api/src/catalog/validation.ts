@@ -22,6 +22,11 @@ export const professionalInput = clientInput
   .pick({ name: true, phone: true, email: true, notes: true })
   .extend({
     specialty: optionalText(150),
+    commissionRate: z
+      .string()
+      .regex(/^(0|[1-9]\d?|100)(\.\d{1,2})?$/)
+      .refine((v) => Number(v) <= 100)
+      .optional(),
     membershipId: z.string().uuid().nullable().default(null),
     reason: catalogReason,
   })
