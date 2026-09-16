@@ -2,7 +2,7 @@
 
 ## Status desta iteração
 
-Entrega local validada em 16/09: comissões individuais no pagamento sobre serviços após desconto, percentual por profissional definido pelo administrador, financeiro próprio e abertura/fechamento/sangria de caixa. Código local, suíte completa API/navegador e revisão visual aprovados. Migration criada e testada em banco isolado, não aplicada no Neon. Publicação depende de conexão remota privada para aplicar schema antes do deploy. Regras e publicação em `docs/comissoes-caixa.md`. Backup e investigação da lentidão inicial adiados durante esta entrega.
+Entrega local validada em 16/09: comissões individuais no pagamento sobre serviços após desconto, percentual por profissional definido pelo administrador, financeiro próprio e abertura/fechamento/sangria de caixa. Código local, suíte completa API/navegador e revisão visual aprovados. Migration `202609160001_commissions_cash` aplicada com sucesso no Neon após conferir o histórico; publicação e smoke test ainda em andamento. Regras em `docs/comissoes-caixa.md`. Backup e investigação da lentidão inicial adiados durante esta entrega.
 
 Infraestrutura em 15/09: usuário escolheu Vercel Hobby inicialmente e pretende migrar para Pro ao comercializar. A configuração de deploy foi preparada para um projeto Vercel na raiz do monorepo, com frontend estático e API NestJS como função; a variável de ambiente foi criada pelo usuário, mas o nome/valor não são registrados aqui. Ainda é necessário confirmar no painel as variáveis obrigatórias e o resultado do primeiro deploy. Neon Free e Drive continuam propostos, ainda não configurados. Backup agendado na Vercel permanece pendente.
 

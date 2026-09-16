@@ -1,5 +1,15 @@
 # Retomada — atualizada em 16/09/2026
 
+## Migration Neon aplicada — publicação em andamento
+
+Usuário preencheu `.local/neon.env` privadamente. Validado formato PostgreSQL, conexão direta Neon com TLS, banco `neondb` e histórico de 10 migrations concluídas; a listagem inicial limitada às cinco mais recentes havia sugerido pendências antigas, mas a consulta completa confirmou todas aplicadas. `npm run db:migrate` com `DATABASE_URL` explícita aplicou `202609160001_commissions_cash` com sucesso no Neon (11/11 migrations). Nenhuma credencial impressa ou registrada. Próximo passo: enviar commit local `46e7028`, verificar deploy e testar API pública. Não repetir migration nem criar administrador. Percentuais existentes começam em 0 e exigem configuração.
+
+## Pausa solicitada — retomar amanhã
+
+Usuário pediu salvar esta etapa para continuar amanhã. Código, testes e documentação de comissões/caixa salvos no commit LOCAL `46e7028`; não enviado ao GitHub, não publicado na Vercel. Próximo passo: conferir se o usuário preencheu `.local/neon.env` (DATABASE_URL estava vazio quando preparado; preenchimento ainda não confirmado), sem imprimir seu conteúdo. Validar destino Neon, consultar migrations e aplicar `202609160001_commissions_cash` com conexão explícita; somente após sucesso enviar commit e validar deploy. Não usar automaticamente o `.env`, que aponta ao banco local, nem repetir criação de administrador. Percentuais dos profissionais existentes começam em 0 e precisarão ser configurados pelo administrador. Nenhum processo de teste ficou ativo. Não repetir testes aprovados sem alteração ou novo motivo.
+
+Retomada de 16/09: `DATABASE_URL` em `.local/neon.env` continua vazio (verificado sem revelar conteúdo); permissões do arquivo 600. Commit local `46e7028` confirmado. Aguardando o usuário preencher a conexão privada do Neon para validar destino e aplicar a migration antes do push. Nenhuma migration, publicação ou teste adicional executado nesta retomada.
+
 ## Entrega local validada em 16/09 — comissões e caixa
 
 Implementados percentual individual no cadastro (administrador), financeiro próprio do profissional e consulta da equipe pelo administrador, comissão reconhecida no pagamento após desconto, snapshot por serviço, estornos e recebimentos posteriores com percentual histórico. Caixa compartilhado por salão: abertura, sangria com motivo, recebimentos/estornos em dinheiro, fechamento com contado/esperado/diferença, responsáveis e histórico. Primeiro turno ativa exigência de caixa aberto para dinheiro. Valores anteriores não são retroativamente comissionados. Percentual inicial dos cadastros existentes: 0%; configurar antes de novas vendas. Troca de vínculo de usuário exige administrador para proteger financeiro individual.
