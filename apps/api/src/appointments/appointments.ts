@@ -24,7 +24,7 @@ import { catalogAudit } from '../catalog/shared';
 import { createInput, optionsQuery, statusInput, updateInput, viewQuery } from './validation';
 import { instant, localParts, occupying, scope, terminal, transitions, withinWork } from './rules';
 const include = {
-  visit: { select: { id: true } },
+  visit: { select: { id: true, orderId: true } },
   professional: { select: { id: true, name: true, membershipId: true, active: true } },
   client: { select: { id: true, name: true, deletedAt: true } },
   location: { select: { id: true, name: true, active: true } },

@@ -2,6 +2,8 @@
 
 ## Status desta iteração
 
+Comanda direta pela agenda solicitada em 16/09: botão no detalhe do agendamento cria comanda com o serviço importado de forma transacional; agendamento já vinculado mostra acesso à comanda. Implementação sem migration validada por typecheck, build e suíte completa API/navegador em banco isolado. Publicação e verificação pública pendentes.
+
 Venda de produtos na comanda solicitada em 16/09: preço por unidade vendida, itens históricos, baixa transacional no pagamento, relatório de vendas em estoque e comissão restrita aos serviços. Migration `202609160002_product_sales` validada em PostgreSQL isolado e aplicada no Neon. Suíte completa API/navegador, build, typecheck, 30 testes unitários e formatação aprovados. Código publicado na Vercel, smoke público sem sessão aprovado; validação autenticada de cadastro/venda real pendente. Regras em `docs/venda-produtos.md`.
 
 Entrega local validada em 16/09: comissões individuais no pagamento sobre serviços após desconto, percentual por profissional definido pelo administrador, financeiro próprio e abertura/fechamento/sangria de caixa. Código local, suíte completa API/navegador e revisão visual aprovados. Migration `202609160001_commissions_cash` aplicada com sucesso no Neon; commits enviados ao GitHub e Vercel servindo a interface e rotas novas. Smoke test público sem sessão aprovado (health 200, rotas protegidas 401); validação autenticada com a conta existente ainda pendente. Regras em `docs/comissoes-caixa.md`. Backup e investigação da lentidão inicial adiados durante esta entrega.

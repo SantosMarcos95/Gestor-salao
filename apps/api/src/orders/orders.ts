@@ -24,6 +24,7 @@ import {
   change,
   checkVersion,
   command,
+  commandFields,
   discountInput,
   importInput,
   lockOrder,
@@ -344,6 +345,112 @@ export class OrdersController {
         );
         return order.id;
       });
+      return this.view(tx, req, id);
+    });
+  }
+  @Post('from-appointment/:appointmentId')
+  async fromAppointment(
+    @Param('appointmentId', ParseUUIDPipe) appointmentId: string,
+    @Body() body: unknown,
+    @Req() req: AuthRequest,
+  ) {
+    orderScope(req.identity);
+    requirePermission(req.identity, 'comandas.abrir');
+    requirePermission(req.identity, 'comandas.editar');
+    requirePermission(req.identity, 'clientes.visualizar_todos');
+    const input = parse(
+      z.object({ ...commandFields, appointmentVersion: z.number().int().positive() }).strict(),
+      body,
+    );
+    return this.db.$transaction(async (tx) => {
+      const id = await command(
+        tx,
+        req,
+        `order:from-appointment:${appointmentId}`,
+        input,
+        async () => {
+          await tx.$queryRaw`SELECT id FROM appointments WHERE salon_id=${req.identity.salonId}::uuid AND id=${appointmentId}::uuid FOR UPDATE`;
+          const a = await tx.appointment.findFirst({
+            where: {
+              id: appointmentId,
+              salonId: req.identity.salonId,
+              professional: agendaScope(req.identity, 'visualizar'),
+            },
+            include: {
+              services: { orderBy: { position: 'asc' } },
+              professional: true,
+              client: true,
+              visit: true,
+            },
+          });
+          if (!a) throw new NotFoundException('Agendamento não encontrado.');
+          if (a.visit) {
+            if (
+              !(await tx.salonOrder.findFirst({
+                where: { id: a.visit.orderId, ...orderScope(req.identity) },
+              }))
+            )
+              throw new NotFoundException('Comanda não encontrada.');
+            return a.visit.orderId;
+          }
+          checkVersion(a.version, input.appointmentVersion);
+          if (!['SCHEDULED', 'CONFIRMED', 'ARRIVED', 'COMPLETED'].includes(a.status))
+            throw new ConflictException('Este agendamento foi cancelado ou marcado como falta.');
+          if (!a.client || a.client.deletedAt)
+            throw new NotFoundException('Cliente ativo não encontrado.');
+          if (!a.professional.active) throw new BadRequestException('O profissional está inativo.');
+          const order = await tx.salonOrder.create({
+            data: {
+              salonId: a.salonId,
+              clientId: a.clientId,
+              clientName: a.client.name,
+              createdBy: req.identity.membershipId,
+            },
+          });
+          await catalogAudit(
+            tx,
+            req,
+            'salon_orders',
+            order.id,
+            'COMANDA_ABERTA',
+            input.reason,
+            order,
+          );
+          const visit = await tx.visit.create({
+            data: {
+              salonId: a.salonId,
+              orderId: order.id,
+              clientId: a.clientId,
+              professionalId: a.professionalId,
+              professionalName: a.professional.name,
+              appointmentId: a.id,
+              items: {
+                create: a.services.map((s) => ({
+                  serviceId: s.serviceId,
+                  position: s.position,
+                  name: s.name,
+                  price: s.price,
+                  durationMinutes: s.durationMinutes,
+                })),
+              },
+            },
+          });
+          if (a.status === 'COMPLETED')
+            await tx.visit.update({ where: { id: visit.id }, data: { status: 'COMPLETED' } });
+          const after = await recalculate(tx, order.id, a.salonId);
+          await catalogAudit(
+            tx,
+            req,
+            'salon_orders',
+            order.id,
+            'AGENDAMENTO_IMPORTADO',
+            input.reason,
+            { ...after, visitId: visit.id, appointmentId: a.id },
+            order,
+          );
+          return order.id;
+        },
+      );
       return this.view(tx, req, id);
     });
   }

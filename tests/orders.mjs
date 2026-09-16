@@ -291,6 +291,50 @@ export async function testOrders({
       },
     },
   });
+  const directAppointment = await prisma.appointment.create({
+    data: {
+      salonId,
+      professionalId: professional.id,
+      clientId: client.id,
+      locationId: location.id,
+      startsAt: new Date('2026-08-03T12:00Z'),
+      endsAt: new Date('2026-08-03T12:30Z'),
+      requestKey: randomUUID(),
+      requestHash: 'd'.repeat(64),
+      services: {
+        create: {
+          serviceId: service.id,
+          name: 'Corte direto da agenda',
+          price: '35.20',
+          durationMinutes: 30,
+          position: 0,
+        },
+      },
+    },
+  });
+  const directPath = `/orders/from-appointment/${directAppointment.id}`;
+  assert.equal((await post(directPath, { appointmentVersion: 1 }, proCookie)).status, 403);
+  const directKey = randomUUID();
+  const directResults = await Promise.all([
+    post(directPath, { appointmentVersion: 1, requestKey: directKey }),
+    post(directPath, { appointmentVersion: 1, requestKey: directKey }),
+  ]);
+  assert.deepEqual(
+    directResults.map((r) => r.status),
+    [201, 201],
+  );
+  assert.equal(directResults[0].data.id, directResults[1].data.id);
+  assert.equal(directResults[0].data.total, '35.20');
+  assert.equal(directResults[0].data.visits[0].appointmentId, directAppointment.id);
+  assert.equal(
+    (await get(`/appointments/${directAppointment.id}`)).data.visit.orderId,
+    directResults[0].data.id,
+  );
+  assert.equal(
+    (await post(directPath, { appointmentVersion: 1 })).data.id,
+    directResults[0].data.id,
+  );
+  assert.equal(await prisma.visit.count({ where: { appointmentId: directAppointment.id } }), 1);
   // Regression: a service completed only in the agenda can still be charged once.
   const completedAppointment = await prisma.appointment.create({
     data: {

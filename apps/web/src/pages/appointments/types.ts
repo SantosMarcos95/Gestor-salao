@@ -15,7 +15,7 @@ export const statusNames: Record<Status, string> = {
   CANCELLED: 'Cancelado',
 };
 export type Appointment = {
-  visit?: { id: string } | null;
+  visit?: { id: string; orderId: string } | null;
   id: string;
   professionalId: string;
   clientId: string;

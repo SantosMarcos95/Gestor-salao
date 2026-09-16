@@ -1,5 +1,9 @@
 # Retomada — atualizada em 16/09/2026
 
+## Comanda direta pela agenda — implementação validada localmente
+
+Usuário pediu botão no detalhe de cliente agendado para abrir comanda. Detalhe da agenda agora oferece “Abrir comanda” quando há permissões e agendamento elegível, criando comanda e importando o serviço histórico na mesma transação; se já vinculado, oferece “Ver comanda”. API usa lock no agendamento e chave idempotente para impedir duplicação por cliques/reenvios concorrentes, respeitando salão, escopo da agenda e permissões de comanda. Sem migration. Typecheck, build e suíte completa API/navegador passaram em banco PostgreSQL isolado; teste novo cobriu permissão, reenvio simultâneo e vínculo único. Ainda falta publicação e verificação pública; nenhum dado real foi alterado.
+
 ## Venda de produtos publicada — validação autenticada pendente
 
 Migration `202609160002_product_sales` aplicada no Neon com sucesso após `prisma migrate status` mostrar somente ela pendente; schema agora com 12 migrations concluídas. Commit `0ae9483` enviado para `origin/main`, GitHub mostrou status Vercel success. Inicialmente alias público ainda servia bundle antigo/rota 404; após propagação, `https://gestor-salao-api.vercel.app` respondeu health 200, `/api/orders/options/products` 401 sem sessão (antes 404) e bundle público contém Adicionar produto à comanda e Preço de venda por unidade. Nenhum produto real teve preço configurado, nenhuma comanda real foi criada e nenhum pagamento real foi feito nesta validação. Próximo passo: usuário configurar preço/quantidade por unidade em Produtos e testar com a própria conta; observar regra de estoque no primeiro pagamento e devolução manual após venda cancelada. Não executar `admin:create`. Nenhum teste ficou ativo. Não repetir suíte aprovada sem mudança funcional.

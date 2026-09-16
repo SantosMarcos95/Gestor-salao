@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import { Dialog } from '../../components/Dialog';
 import { formatPrice } from '../services/types';
+import { useCommand } from '../orders/useCommand';
 import { canFor, statusNames, type Detail, type Status } from './types';
 const next: Record<Status, Status[]> = {
   SCHEDULED: ['CONFIRMED', 'ARRIVED', 'NO_SHOW', 'CANCELLED'],
@@ -30,6 +31,8 @@ export function AppointmentDetail({
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const command = useCommand();
+  const navigate = useNavigate();
   const detail = useQuery({
     queryKey: ['appointment', id],
     queryFn: () => api<Detail>(`/appointments/${id}`),
@@ -76,8 +79,26 @@ export function AppointmentDetail({
       setBusy(false);
     }
   }
+  async function openOrder() {
+    if (!a) return;
+    const order = await command.send<{ id: string }>(`/orders/from-appointment/${a.id}`, {
+      appointmentVersion: a.version,
+      reason: '',
+    });
+    if (order) {
+      close();
+      navigate(`/comandas/${order.id}`);
+    }
+  }
+  const canOpenOrder =
+    permissions.includes('comandas.abrir') &&
+    permissions.includes('comandas.editar') &&
+    permissions.includes('clientes.visualizar_todos') &&
+    permissions.some((p) =>
+      ['comandas.visualizar_todas', 'comandas.visualizar_proprias'].includes(p),
+    );
   return (
-    <Dialog title="Detalhes do agendamento" busy={busy} close={close}>
+    <Dialog title="Detalhes do agendamento" busy={busy || command.busy} close={close}>
       {detail.isPending || detail.isFetching ? (
         <p>Carregando agendamento…</p>
       ) : detail.isError ? (
@@ -115,29 +136,41 @@ export function AppointmentDetail({
             {!a.visit && !['CANCELLED', 'NO_SHOW'].includes(a.status) && (
               <div className="panel">
                 <p>
-                  Concluir na agenda registra o serviço realizado. Para lançar o valor no
-                  financeiro, abra uma comanda, use “Trazer da agenda” e confirme o pagamento em
-                  dinheiro, crédito, débito ou PIX.
+                  Abra uma comanda com os serviços deste agendamento para acompanhar o atendimento e
+                  registrar o pagamento.
                 </p>
-                {permissions.some((p) =>
-                  ['comandas.visualizar_todas', 'comandas.visualizar_proprias'].includes(p),
-                ) && (
-                  <Link
+                {canOpenOrder && (
+                  <button
                     className="button primary"
-                    to={`/comandas?clientId=${a.clientId}`}
-                    onClick={close}
+                    disabled={busy || command.busy}
+                    onClick={openOrder}
                   >
-                    Ir para as comandas do cliente
-                  </Link>
+                    {command.busy ? 'Abrindo comanda…' : 'Abrir comanda'}
+                  </button>
+                )}
+                {command.error && (
+                  <p className="error" role="alert">
+                    {command.error}
+                  </p>
                 )}
               </div>
             )}
 
             {a.visit && (
-              <p className="muted">
-                Este agendamento está vinculado a uma comanda. Acompanhe os serviços na tela
-                Atendimentos.
-              </p>
+              <div className="panel">
+                <p>Este agendamento está vinculado a uma comanda.</p>
+                {permissions.some((p) =>
+                  ['comandas.visualizar_todas', 'comandas.visualizar_proprias'].includes(p),
+                ) && (
+                  <Link
+                    className="button primary"
+                    to={`/comandas/${a.visit.orderId}`}
+                    onClick={close}
+                  >
+                    Ver comanda
+                  </Link>
+                )}
+              </div>
             )}
             {!a.visit &&
               canFor(permissions, membershipId, a.professional, 'editar') &&
