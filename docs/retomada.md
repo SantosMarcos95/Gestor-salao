@@ -6,6 +6,8 @@ Usuário informou que Comissão (%) não aparece em Editar profissional. Código
 
 Correção publicada no commit `515bbd9`; bundle público novo confirmou presença da mensagem. Usuário ainda precisa informar o perfil exibido abaixo do próprio nome ou o aviso que aparece na janela para concluir o diagnóstico da conta.
 
+Usuário confirmou em seguida que o campo Comissão (%) apareceu. Não foi necessário alterar permissões ou cadastros. Ainda não foi informado se algum percentual foi salvo ou se houve teste autenticado de comissão/caixa com dados reais.
+
 ## Publicação de comissões e caixa concluída — validação autenticada pendente
 
 Commits `46e7028` (código) e `e245ab7` (registro da migration) enviados a `origin/main`; push confirmou `8303fcd..e245ab7`. Após alguns minutos, Vercel serviu interface HTTP 200 com bundle contendo Meu financeiro e Caixa; `/api/health` HTTP 200; `/api/commissions/context` e `/api/cash` passaram de 404 para 401 sem sessão, confirmando as rotas novas e a proteção. Migration Neon já aplicada (11/11). Não houve login autenticado remoto ou operação de caixa/comissão em dados reais nesta validação. Próximo passo operacional: entrar na Vercel com a conta existente, definir percentuais dos profissionais (cadastros antigos: 0%), conferir Meu financeiro e abrir o primeiro caixa quando a equipe estiver pronta para exigir turno aberto para dinheiro. Não executar `admin:create`. A lentidão inicial e backup remoto permanecem pendentes.
