@@ -135,6 +135,20 @@ export function ProfessionalDialog({
               </small>
             </label>
           )}
+          {commissionAccess.isPending && <p className="muted">Verificando acesso à comissão…</p>}
+          {commissionAccess.isError && (
+            <p className="error" role="alert">
+              Não foi possível verificar o acesso à comissão: {commissionAccess.error.message}{' '}
+              <button type="button" className="button" onClick={() => commissionAccess.refetch()}>
+                Tentar novamente
+              </button>
+            </p>
+          )}
+          {commissionAccess.isSuccess && !commissionAccess.data.all && (
+            <p className="muted">
+              Comissão (%) só pode ser configurada por uma conta com o perfil Administrador do salão.
+            </p>
+          )}
           <details>
             <summary>Usuário vinculado: {selected ? selected.user.name : 'nenhum'}</summary>
             <p className="muted">
