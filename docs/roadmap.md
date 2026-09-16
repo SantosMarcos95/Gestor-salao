@@ -2,6 +2,8 @@
 
 ## Status desta iteração
 
+Investigação da lentidão inicial em 16/09: medição sem sessão encontrou primeira chamada à API em 2,8 s e seguinte em 0,45 s; função em `iad1` e banco Neon em `sa-east-1`. Região da função configurada localmente para `gru1`, conforme orientação oficial Vercel. Publicação e medição posterior pendentes; não há diagnóstico isolado de cold start da função versus retomada do banco.
+
 Cancelamento de agenda/comanda em 16/09: agendamento sem comanda é cancelado na agenda; com comanda, o cancelamento ocorre na comanda e sincroniza a agenda. Interface esclarecida; Atendente passa a ter permissão de cancelar comanda, com migration para perfis existentes aplicada no Neon e concessão agregada conferida. Motivo obrigatório em cancelamentos de agendamento, atendimento, comanda e venda. Build e suíte completa API/navegador aprovados em banco isolado. Código publicado, health e bundle público confirmados; validação autenticada com dados reais pendente.
 
 Comanda direta pela agenda solicitada em 16/09: botão no detalhe do agendamento cria comanda com o serviço importado de forma transacional; agendamento já vinculado mostra acesso à comanda. Implementação sem migration validada por typecheck, build e suíte completa API/navegador em banco isolado. Código publicado; health e bundle público confirmados, validação autenticada pelo usuário pendente.
