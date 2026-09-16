@@ -35,6 +35,7 @@ export class StockReportController {
         'Ativo',
         'Unidade',
         'Consumo no período',
+        'Vendas',
         'Entradas',
         'Perdas',
         'Baixas manuais',
@@ -50,6 +51,7 @@ export class StockReportController {
         r.baseUnit,
         ...[
           r.consumed,
+          r.sold,
           r.entries,
           r.losses,
           r.manual,
@@ -88,6 +90,7 @@ export class StockReportController {
       ), movement_totals AS (
         SELECT m.product_id,
           SUM(CASE WHEN c.id IS NOT NULL THEN m.quantity ELSE 0 END) AS consumed,
+          SUM(CASE WHEN m.kind='SALE' THEN m.quantity ELSE 0 END) AS sold,
           SUM(CASE WHEN m.kind='ENTRY' THEN m.quantity ELSE 0 END) AS entries,
           SUM(CASE WHEN m.kind='LOSS' THEN m.quantity ELSE 0 END) AS losses,
           SUM(CASE WHEN m.kind='OUT' AND c.id IS NULL THEN m.quantity ELSE 0 END) AS manual,
@@ -97,7 +100,7 @@ export class StockReportController {
         WHERE m.salon_id=${salonId}::uuid AND m.created_at>=${start} AND m.created_at<${end}
         GROUP BY m.product_id
       ), report AS (
-        SELECT p.*, COALESCE(m.consumed,0) AS consumed, COALESCE(m.entries,0) AS entries,
+        SELECT p.*, COALESCE(m.consumed,0) AS consumed, COALESCE(m.sold,0) AS sold, COALESCE(m.entries,0) AS entries,
           COALESCE(m.losses,0) AS losses, COALESCE(m.manual,0) AS manual, COALESCE(m.adjustments,0) AS adjustments
         FROM selected p LEFT JOIN movement_totals m ON m.product_id=p.id
       )`;
@@ -112,6 +115,7 @@ export class StockReportController {
             needed: string;
             belowMinimum: boolean;
             consumed: string;
+            sold: string;
             entries: string;
             losses: string;
             manual: string;
@@ -120,7 +124,7 @@ export class StockReportController {
         >(Prisma.sql`${source}
         SELECT id,name,base_unit AS "baseUnit",active,balance::text,minimum::text,
         GREATEST(minimum-balance,0)::text AS needed,(active AND balance<=minimum) AS "belowMinimum",
-        consumed::text,entries::text,losses::text,manual::text,adjustments::text FROM report
+        consumed::text,sold::text,entries::text,losses::text,manual::text,adjustments::text FROM report
         ORDER BY (active AND balance<=minimum) DESC,name ASC,id ASC LIMIT ${exporting ? EXPORT_LIMIT + 1 : 20} OFFSET ${exporting ? 0 : (page - 1) * 20}`);
         const [summary] = await tx.$queryRaw<
           { products: bigint; replenish: bigint; consumed: bigint }[]
@@ -146,6 +150,7 @@ export class StockReportController {
                 'minimum',
                 'needed',
                 'consumed',
+                'sold',
                 'entries',
                 'losses',
                 'manual',

@@ -25,6 +25,7 @@ import { testAvailability, testAvailabilityBrowser } from './availability.mjs';
 import { testCatalog, testCatalogBrowser } from './catalog.mjs';
 import { testCommissionsCash } from './commissions-cash.mjs';
 import { testCommissionsCashBrowser } from './commissions-cash-browser.mjs';
+import { testProductSales, testProductSalesBrowser } from './product-sales.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const directory = mkdtempSync(join(tmpdir(), 'salao-test-'));
@@ -489,6 +490,7 @@ try {
     await testAvailabilityBrowser({ page, expect, root, join });
     await testAppointmentsBrowser({ page, expect, root, join, prisma, salonId });
     await testOrdersBrowser({ page, expect, root, join, prisma, salonId });
+    await testProductSalesBrowser({ page, expect, root, join, prisma, salonId });
     await testReportsBrowser({ page, expect, root, join });
     await testStockReportBrowser({ page, expect, root, join });
     await testFinanceBrowser({ page, expect, root, join, prisma, salonId });
@@ -940,6 +942,14 @@ try {
     cookie,
     proCookie: proLogin.cookie,
     proMember,
+    otherMember,
+    salonId,
+  });
+  await testProductSales({
+    request,
+    prisma,
+    cookie,
+    proCookie: proLogin.cookie,
     otherMember,
     salonId,
   });

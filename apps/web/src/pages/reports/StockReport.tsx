@@ -14,6 +14,7 @@ type Row = {
   needed: string;
   belowMinimum: boolean;
   consumed: string;
+  sold: string;
   entries: string;
   losses: string;
   manual: string;
@@ -124,8 +125,8 @@ export function StockReport({ today, timezone }: { today: string; timezone: stri
         <summary>Como interpretar as quantidades</summary>
         <p>
           Consumo inclui apenas produtos confirmados nos atendimentos, pela data da baixa. Cancelar
-          o atendimento não devolve o produto consumido. Perdas e baixas manuais são mostradas
-          separadamente.
+          o atendimento não devolve o produto consumido. Vendas, perdas e baixas manuais são
+          mostradas separadamente.
         </p>
         <p>
           “Falta até o mínimo” é a diferença entre o mínimo cadastrado e o saldo atual. Ao atingir
@@ -201,6 +202,7 @@ export function StockReport({ today, timezone }: { today: string; timezone: stri
                           <details>
                             <summary>Ver movimentações de {r.name}</summary>
                             <p>Entradas: {amount(r.entries, r.baseUnit)}</p>
+                            <p>Vendas: {amount(r.sold, r.baseUnit)}</p>
                             <p>Perdas: {amount(r.losses, r.baseUnit)}</p>
                             <p>Baixas manuais: {amount(r.manual, r.baseUnit)}</p>
                             <p>Ajustes: {amount(r.adjustments, r.baseUnit)}</p>

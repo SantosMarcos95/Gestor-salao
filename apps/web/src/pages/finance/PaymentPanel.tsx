@@ -62,10 +62,12 @@ export function PaymentPanel({
             {!data.sale ? (
               <p>
                 {data.order.status === 'READY'
-                  ? 'Serviços finalizados. Escolha a forma de pagamento em Receber pagamento e confirme o recebimento para lançar no financeiro.'
+                  ? 'Itens finalizados. Escolha a forma de pagamento em Receber pagamento e confirme o recebimento para lançar no financeiro.'
                   : data.order.status === 'CANCELLED'
                     ? 'Comanda cancelada sem venda registrada.'
-                    : 'Finalize os serviços antes de receber o pagamento.'}
+                    : canFinalize
+                      ? 'Os itens estão prontos para finalizar e receber.'
+                      : 'Finalize os itens antes de receber o pagamento.'}
               </p>
             ) : (
               <>
@@ -121,10 +123,6 @@ export function PaymentPanel({
               can('pagamentos.registrar') &&
               can('comandas.fechar') && (
                 <>
-                  <p>
-                    Os atendimentos já foram concluídos. Continue para escolher a forma de
-                    pagamento.
-                  </p>
                   <button
                     className="button primary"
                     disabled={command.busy}

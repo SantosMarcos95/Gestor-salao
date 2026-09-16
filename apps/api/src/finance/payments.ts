@@ -29,6 +29,7 @@ import {
 } from '../orders/rules';
 import { checkoutInput, preparePayments, refundInput, voidInput } from './rules';
 import { snapshotCommissions, syncCommissions } from './commissions';
+import { debitSoldProducts } from './product-sales';
 import { recordCash } from './cash';
 
 export const saleInclude = {
@@ -147,6 +148,7 @@ export class PaymentsController {
             total: order.total,
           });
           await snapshotCommissions(tx, order.salonId, id);
+          await debitSoldProducts(tx, req, id);
         }
         for (const line of payments) {
           const payment = await tx.payment.create({

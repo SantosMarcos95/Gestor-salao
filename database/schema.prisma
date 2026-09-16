@@ -392,18 +392,22 @@ model Product {
   baseUnit String @map("base_unit") @db.VarChar(2)
   packages Json
   minimum Decimal @db.Decimal(18, 6)
+  salePrice Decimal? @map("sale_price") @db.Decimal(14, 2)
+  saleQuantity Decimal @default(1) @map("sale_quantity") @db.Decimal(18, 6)
   balance Decimal @default(0) @db.Decimal(18, 6)
   active Boolean @default(true)
   version Int @default(1)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
   movements StockMovement[]
+  orderItems OrderProductItem[]
   @@unique([salonId, id])
   @@index([salonId, active, name])
   @@map("products")
 }
 model StockMovement {
   consumption VisitConsumption?
+  orderProductItem OrderProductItem?
   @@unique([salonId, id])
   id String @id @default(uuid()) @db.Uuid
   salonId String @map("salon_id") @db.Uuid
@@ -450,9 +454,31 @@ model SalonOrder {
   cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(3)
   client Client @relation(fields:[salonId,clientId],references:[salonId,id],onDelete:Restrict)
   visits Visit[]
+  productItems OrderProductItem[]
   @@unique([salonId,id])
   @@index([salonId,status,createdAt])
   @@map("salon_orders")
+}
+model OrderProductItem {
+  id String @id @default(uuid()) @db.Uuid
+  salonId String @map("salon_id") @db.Uuid
+  orderId String @map("order_id") @db.Uuid
+  productId String @map("product_id") @db.Uuid
+  movementId String? @unique @map("movement_id") @db.Uuid
+  productName String @map("product_name") @db.VarChar(150)
+  baseUnit String @map("base_unit") @db.VarChar(2)
+  saleQuantity Decimal @map("sale_quantity") @db.Decimal(18, 6)
+  units Int
+  unitPrice Decimal @map("unit_price") @db.Decimal(14, 2)
+  total Decimal @db.Decimal(14, 2)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  order SalonOrder @relation(fields:[salonId,orderId],references:[salonId,id],onDelete:Restrict)
+  product Product @relation(fields:[salonId,productId],references:[salonId,id],onDelete:Restrict)
+  movement StockMovement? @relation(fields:[salonId,movementId],references:[salonId,id],onDelete:Restrict)
+  @@unique([salonId,id])
+  @@unique([salonId,movementId])
+  @@index([salonId,orderId])
+  @@map("order_product_items")
 }
 model Visit {
   id String @id @default(uuid()) @db.Uuid

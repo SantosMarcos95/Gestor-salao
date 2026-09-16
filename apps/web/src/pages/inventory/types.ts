@@ -6,6 +6,8 @@ export type Product = {
   baseUnit: 'un' | 'g' | 'ml';
   packages: Packaging[];
   minimum: string;
+  salePrice: string | null;
+  saleQuantity: string;
   balance?: string;
   belowMinimum?: boolean;
   active: boolean;
@@ -49,6 +51,7 @@ export const kinds: Record<string, string> = {
   LOSS: 'Perda',
   OUT: 'Baixa manual',
   ADJUST: 'Ajuste de inventário',
+  SALE: 'Venda em comanda',
 };
 export const capabilities: Record<string, string> = {
   ENTRY: 'estoque.entrada',

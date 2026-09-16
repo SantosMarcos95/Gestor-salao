@@ -20,7 +20,7 @@ const titles: Record<Action, string> = {
   cancelVisit: 'Cancelar atendimento',
   prices: 'Editar valores',
   discount: 'Aplicar desconto',
-  ready: 'Finalizar serviços da comanda',
+  ready: 'Finalizar itens da comanda',
   cancelOrder: 'Cancelar comanda',
 };
 export function ActionDialog({
@@ -92,7 +92,7 @@ export function ActionDialog({
           )}
           {action === 'discount' && (
             <>
-              <p>Serviços: {formatPrice(order!.subtotal)}</p>
+              <p>Serviços e produtos: {formatPrice(order!.subtotal)}</p>
               <label>
                 Desconto em reais
                 <input
@@ -141,8 +141,8 @@ export function ActionDialog({
           )}
           {action === 'ready' && (
             <p>
-              Os serviços e o desconto serão preservados. Depois, registre o recebimento na seção
-              Pagamentos.
+              Os serviços, produtos e desconto serão preservados. Depois, registre o recebimento na
+              seção Pagamentos.
             </p>
           )}
           {(action === 'cancelOrder' || action === 'cancelVisit') && (

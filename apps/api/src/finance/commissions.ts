@@ -35,10 +35,14 @@ export async function snapshotCommissions(
   });
   if (!items.length) return; // Existing historical sales are never backfilled with current rates.
   const order = await tx.salonOrder.findUniqueOrThrow({ where: { id: orderId } });
-  const amounts = allocate(
-    cents(order.total.toFixed(2)),
-    items.map((i) => cents(i.price.toFixed(2))),
-  );
+  const products = await tx.orderProductItem.findMany({
+    where: { salonId, orderId },
+    orderBy: { id: 'asc' },
+  });
+  const amounts = allocate(cents(order.total.toFixed(2)), [
+    ...items.map((i) => cents(i.price.toFixed(2))),
+    ...products.map((p) => cents(p.total.toFixed(2))),
+  ]);
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     await tx.commissionBasis.create({
@@ -79,10 +83,12 @@ export async function syncCommissions(
       p.refunds.reduce((n, r) => n + cents(r.amount.toFixed(2)), 0n),
     0n,
   );
-  const allocated = allocate(
-    net,
-    bases.map((b) => cents(b.base.toFixed(2))),
-  );
+  const sale = await tx.orderSale.findUniqueOrThrow({
+    where: { salonId_orderId: { salonId, orderId } },
+  });
+  const serviceTotal = bases.reduce((n, b) => n + cents(b.base.toFixed(2)), 0n);
+  const productTotal = cents(sale.total.toFixed(2)) - serviceTotal;
+  const allocated = allocate(net, [...bases.map((b) => cents(b.base.toFixed(2))), productTotal]);
   for (let i = 0; i < bases.length; i++) {
     const b = bases[i],
       previous = await tx.commissionEntry.aggregate({

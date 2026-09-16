@@ -25,6 +25,13 @@ const productFields = {
   description: z.string().trim().max(2000).nullable().default(null),
   baseUnit: z.enum(['un', 'g', 'ml']),
   minimum: decimal,
+  salePrice: z
+    .string()
+    .regex(/^(0|[1-9]\d{0,11})(\.\d{1,2})?$/)
+    .refine((v) => !/^0(?:\.0{1,2})?$/.test(v))
+    .nullable()
+    .optional(),
+  saleQuantity: decimal.refine((v) => scaled(v) > 0n).optional(),
   packages: z.array(packageInput).max(20),
   reason: catalogReason,
 };

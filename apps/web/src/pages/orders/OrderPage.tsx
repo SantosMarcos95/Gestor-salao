@@ -7,10 +7,15 @@ import { formatPrice } from '../services/types';
 import { ActionDialog, type Action } from './ActionDialog';
 import { AddVisitDialog } from './AddVisitDialog';
 import { VisitCard } from './VisitCard';
+import { ProductSaleDialog } from './ProductSaleDialog';
+import { ProductRemoveDialog } from './ProductRemoveDialog';
+import { quantity } from '../inventory/types';
 import { auditNames, orderStates, type Order, type Visit } from './types';
 export function OrderPage({ profile }: { profile: Profile }) {
   const { id } = useParams();
   const [adding, setAdding] = useState<'new' | 'agenda' | null>(null),
+    [addingProduct, setAddingProduct] = useState(false),
+    [removingProduct, setRemovingProduct] = useState<Order['productItems'][number] | null>(null),
     [action, setAction] = useState<{ type: Action; visit?: Visit } | null>(null);
   const query = useQuery({
     queryKey: ['order', id, profile.permissions.join(',')],
@@ -47,7 +52,7 @@ export function OrderPage({ profile }: { profile: Profile }) {
       </div>
       <section className="panel order-summary">
         <div>
-          <span>Serviços</span>
+          <span>Subtotal de serviços e produtos</span>
           <strong>{formatPrice(o.subtotal)}</strong>
         </div>
         <div>
@@ -67,6 +72,11 @@ export function OrderPage({ profile }: { profile: Profile }) {
               Adicionar atendimento
             </button>
           )}
+          {can('comandas.editar') && can('produtos.visualizar') && (
+            <button className="button" onClick={() => setAddingProduct(true)}>
+              Adicionar produto
+            </button>
+          )}
           {can('comandas.editar') &&
             (can('agenda.visualizar_todas') || can('agenda.visualizar_propria')) && (
               <button className="button" onClick={() => setAdding('agenda')}>
@@ -80,14 +90,14 @@ export function OrderPage({ profile }: { profile: Profile }) {
           )}
           {can('comandas.fechar') && (
             <button className="button" onClick={() => setAction({ type: 'ready' })}>
-              Finalizar serviços
+              Finalizar itens
             </button>
           )}
         </div>
       )}
       {o.status === 'READY' && (
         <p className="success" role="status">
-          Serviços finalizados. Confira os pagamentos abaixo para receber e quitar a comanda.
+          Itens finalizados. Confira os pagamentos abaixo para receber e quitar a comanda.
         </p>
       )}
       {['OPEN', 'READY'].includes(o.status) && can('comandas.cancelar') && (
@@ -106,14 +116,39 @@ export function OrderPage({ profile }: { profile: Profile }) {
         orderId={o.id}
         permissions={profile.permissions}
         canFinalize={
-          o.visits.some((v) => v.status === 'COMPLETED') &&
-          o.visits.every((v) => ['COMPLETED', 'CANCELLED'].includes(v.status))
+          o.visits.every((v) => ['COMPLETED', 'CANCELLED'].includes(v.status)) &&
+          (o.visits.some((v) => v.status === 'COMPLETED') || o.productItems.length > 0)
         }
       />
+      <section className="panel">
+        <h2>Produtos da comanda</h2>
+        {!o.productItems.length && <p className="muted">Nenhum produto adicionado.</p>}
+        {o.productItems.map((item) => (
+          <div className="visit-actions" key={item.id}>
+            <p>
+              <strong>{item.productName}</strong> · {item.units} × {quantity(item.saleQuantity)}{' '}
+              {item.baseUnit}
+              {' · '}
+              {formatPrice(item.unitPrice)} por unidade · <strong>{formatPrice(item.total)}</strong>
+            </p>
+            {o.status === 'OPEN' && can('comandas.editar') && (
+              <button className="button" onClick={() => setRemovingProduct(item)}>
+                Remover
+              </button>
+            )}
+          </div>
+        ))}
+        {!!o.productItems.length && (
+          <p className="muted">
+            A baixa do estoque ocorre no primeiro pagamento. Cancelamentos posteriores não devolvem
+            o produto automaticamente.
+          </p>
+        )}
+      </section>
       <div className="visits-grid">
-        {!o.visits.length ? (
+        {!o.visits.length && !o.productItems.length ? (
           <p className="empty panel">
-            Adicione um atendimento ou traga os serviços de um agendamento.
+            Adicione um atendimento, traga os serviços da agenda ou venda um produto.
           </p>
         ) : (
           o.visits.map((v) => (
@@ -139,6 +174,14 @@ export function OrderPage({ profile }: { profile: Profile }) {
       </details>
       {adding && (
         <AddVisitDialog order={o} fromAgenda={adding === 'agenda'} close={() => setAdding(null)} />
+      )}
+      {addingProduct && <ProductSaleDialog order={o} close={() => setAddingProduct(false)} />}
+      {removingProduct && (
+        <ProductRemoveDialog
+          order={o}
+          item={removingProduct}
+          close={() => setRemovingProduct(null)}
+        />
       )}
       {action && (
         <ActionDialog

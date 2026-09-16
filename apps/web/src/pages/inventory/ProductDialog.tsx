@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Dialog } from '../../components/Dialog';
 import { api } from '../../lib/api';
-import { decimalValue, type Product, type Packaging } from './types';
+import { decimalValue, quantity, type Product, type Packaging } from './types';
 
 export function ProductDialog({
   product,
@@ -31,6 +31,8 @@ export function ProductDialog({
           description: data.get('description'),
           baseUnit: unit,
           minimum: decimalValue(data.get('minimum')),
+          salePrice: data.get('salePrice') ? decimalValue(data.get('salePrice')) : null,
+          saleQuantity: decimalValue(data.get('saleQuantity')),
           packages: packages.map((p) => ({ ...p, quantity: decimalValue(p.quantity) })),
           reason: data.get('reason'),
           ...(product ? { version: product.version } : {}),
@@ -94,6 +96,30 @@ export function ProductDialog({
               />
             </label>
           </div>
+          <div className="form-grid">
+            <label>
+              Quantidade em cada unidade vendida ({unit})
+              <input
+                name="saleQuantity"
+                inputMode="decimal"
+                defaultValue={product ? quantity(product.saleQuantity) : '1'}
+                required
+              />
+            </label>
+            <label>
+              Preço de venda por unidade (R$)
+              <input
+                name="salePrice"
+                inputMode="decimal"
+                defaultValue={product?.salePrice?.replace('.', ',') ?? ''}
+                placeholder="Deixe vazio se não estiver à venda"
+              />
+            </label>
+          </div>
+          <p className="muted">
+            Ex.: um frasco de 500 ml vendido por R$ 30: quantidade 500 ml e preço 30. Deixe o preço
+            vazio para impedir a venda.
+          </p>
           <p className="muted">
             A unidade-base é fixa após o cadastro. Quantidades aceitam até seis casas decimais, sem
             separador de milhar.

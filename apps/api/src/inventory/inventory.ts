@@ -35,6 +35,8 @@ import {
 const productView = (p: Product, req: AuthRequest) => ({
   ...p,
   minimum: p.minimum.toFixed(6),
+  salePrice: p.salePrice?.toFixed(2) ?? null,
+  saleQuantity: p.saleQuantity.toFixed(6),
   balance: req.identity.permissions.includes('estoque.visualizar')
     ? p.balance.toFixed(6)
     : undefined,

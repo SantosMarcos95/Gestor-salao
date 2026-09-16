@@ -64,6 +64,12 @@ export const pricesInput = change
   })
   .strict();
 export const discountInput = change.extend({ discount: serviceInput.shape.price }).strict();
+export const orderProductInput = change
+  .extend({
+    productId: z.string().uuid(),
+    units: z.number().int().min(1).max(10000),
+  })
+  .strict();
 export const consumeInput = change
   .extend({
     productId: z.string().uuid(),
@@ -83,7 +89,7 @@ export function totals(prices: string[], discount: string) {
     throw new BadRequestException('O total ultrapassa o limite permitido.');
   if (off > subtotal)
     throw new BadRequestException(
-      'O desconto não pode ultrapassar o valor dos serviços. Reduza o desconto antes de retirar serviços.',
+      'O desconto não pode ultrapassar o valor da comanda. Reduza o desconto antes de retirar itens.',
     );
   return { subtotal: money(subtotal), discount: money(off), total: money(subtotal - off) };
 }
@@ -222,10 +228,16 @@ export async function recalculate(
 ) {
   const order = await tx.salonOrder.findFirstOrThrow({
     where: { id, salonId },
-    include: { visits: { where: { status: { not: 'CANCELLED' } }, include: { items: true } } },
+    include: {
+      visits: { where: { status: { not: 'CANCELLED' } }, include: { items: true } },
+      productItems: true,
+    },
   });
   const amounts = totals(
-    order.visits.flatMap((v) => v.items.map((i) => i.price.toFixed(2))),
+    [
+      ...order.visits.flatMap((v) => v.items.map((i) => i.price.toFixed(2))),
+      ...order.productItems.map((i) => i.total.toFixed(2)),
+    ],
     discount ?? order.discount.toFixed(2),
   );
   return tx.salonOrder.update({ where: { id }, data: { ...amounts, version: { increment: 1 } } });

@@ -555,7 +555,7 @@ export async function testOrdersBrowser({ page, expect, root, join, prisma, salo
   await expect(page.getByLabel('Forma de pagamento 1', { exact: true })).toBeVisible();
   await page.getByRole('dialog').getByRole('button', { name: 'Voltar', exact: true }).click();
   await page.getByRole('dialog').waitFor({ state: 'hidden' });
-  await expect(page.getByRole('status')).toContainText('Serviços finalizados');
+  await expect(page.getByRole('status')).toContainText('Itens finalizados');
   await page.screenshot({
     path: join(root, '.local/screenshots/orders-mobile.png'),
     fullPage: true,

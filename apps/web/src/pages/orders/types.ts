@@ -39,6 +39,16 @@ export type Order = {
   notes: string | null;
   createdAt: string;
   visits: Visit[];
+  productItems: {
+    id: string;
+    productName: string;
+    baseUnit: string;
+    saleQuantity: string;
+    units: number;
+    unitPrice: string;
+    total: string;
+    movementId: string | null;
+  }[];
   history?: {
     id: string;
     action: string;
@@ -77,6 +87,8 @@ export const auditNames: Record<string, string> = {
   ATENDIMENTO_CONCLUIDO: 'Atendimento concluído',
   ATENDIMENTO_CANCELADO: 'Atendimento cancelado',
   CONSUMO_CONFIRMADO: 'Consumo confirmado',
+  PRODUTO_ADICIONADO: 'Produto adicionado',
+  PRODUTO_REMOVIDO: 'Produto removido',
 };
 export type Option = { id: string; name: string };
 export const decimal = (v: FormDataEntryValue | null) =>

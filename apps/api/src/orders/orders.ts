@@ -29,6 +29,7 @@ import {
   lockOrder,
   openOrder,
   orderInput,
+  orderProductInput,
   orderQuery,
   orderScope,
   pricesInput,
@@ -48,6 +49,7 @@ export class OrdersController {
       where: { id, ...orderScope(req.identity) },
       include: {
         visits: { orderBy: [{ createdAt: 'asc' }, { id: 'asc' }], include: visitInclude },
+        productItems: { orderBy: [{ createdAt: 'asc' }, { id: 'asc' }] },
       },
     });
     if (!order) throw new NotFoundException('Comanda não encontrada.');
@@ -57,6 +59,12 @@ export class OrdersController {
       discount: order.discount.toFixed(2),
       total: order.total.toFixed(2),
       visits: order.visits.map((v) => visitView(v, req.identity)),
+      productItems: order.productItems.map((i) => ({
+        ...i,
+        saleQuantity: i.saleQuantity.toFixed(6),
+        unitPrice: i.unitPrice.toFixed(2),
+        total: i.total.toFixed(2),
+      })),
     };
   }
   @Get()
@@ -179,6 +187,52 @@ export class OrdersController {
       pageSize: 20,
     };
   }
+  @Get('options/products')
+  async products(@Query() query: unknown, @Req() req: AuthRequest) {
+    orderScope(req.identity);
+    requirePermission(req.identity, 'comandas.editar');
+    requirePermission(req.identity, 'produtos.visualizar');
+    const { search, page } = parse(catalogQuery.pick({ search: true, page: true }), query);
+    const where = {
+      salonId: req.identity.salonId,
+      active: true,
+      salePrice: { not: null },
+      name: { contains: search, mode: 'insensitive' as const },
+    };
+    const [items, total] = await this.db.$transaction(
+      [
+        this.db.product.findMany({
+          where,
+          select: {
+            id: true,
+            name: true,
+            baseUnit: true,
+            saleQuantity: true,
+            salePrice: true,
+            balance: true,
+          },
+          orderBy: [{ name: 'asc' }, { id: 'asc' }],
+          skip: (page - 1) * 20,
+          take: 20,
+        }),
+        this.db.product.count({ where }),
+      ],
+      { isolationLevel: 'RepeatableRead' },
+    );
+    return {
+      items: items.map((p) => ({
+        ...p,
+        saleQuantity: p.saleQuantity.toFixed(6),
+        salePrice: p.salePrice!.toFixed(2),
+        balance: req.identity.permissions.includes('estoque.visualizar')
+          ? p.balance.toFixed(6)
+          : undefined,
+      })),
+      total,
+      page,
+      pageSize: 20,
+    };
+  }
   @Get(':id/appointments')
   async appointments(
     @Param('id', ParseUUIDPipe) id: string,
@@ -289,6 +343,89 @@ export class OrdersController {
           order,
         );
         return order.id;
+      });
+      return this.view(tx, req, id);
+    });
+  }
+  @Post(':id/products')
+  addProduct(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: unknown,
+    @Req() req: AuthRequest,
+  ) {
+    const input = parse(orderProductInput, body);
+    requirePermission(req.identity, 'comandas.editar');
+    requirePermission(req.identity, 'produtos.visualizar');
+    return this.db.$transaction(async (tx) => {
+      await command(tx, req, `order:${id}:product`, input, async () => {
+        const before = await lockOrder(tx, req.identity, id);
+        openOrder(before);
+        checkVersion(before.version, input.version);
+        if (
+          (await tx.orderProductItem.count({ where: { salonId: before.salonId, orderId: id } })) >=
+          100
+        )
+          throw new BadRequestException('Limite de produtos da comanda atingido.');
+        const product = await tx.product.findFirst({
+          where: { id: input.productId, salonId: before.salonId, active: true },
+        });
+        if (!product || !product.salePrice)
+          throw new NotFoundException('Produto ativo com preço de venda não encontrado.');
+        const lineTotal = product.salePrice.mul(input.units);
+        if (lineTotal.greaterThan('999999999999.99'))
+          throw new BadRequestException('O valor do item ultrapassa o limite permitido.');
+        const item = await tx.orderProductItem.create({
+          data: {
+            salonId: before.salonId,
+            orderId: id,
+            productId: product.id,
+            productName: product.name,
+            baseUnit: product.baseUnit,
+            saleQuantity: product.saleQuantity,
+            units: input.units,
+            unitPrice: product.salePrice,
+            total: lineTotal,
+          },
+        });
+        await recalculate(tx, id, before.salonId);
+        await catalogAudit(tx, req, 'salon_orders', id, 'PRODUTO_ADICIONADO', input.reason, {
+          itemId: item.id,
+          productId: item.productId,
+          units: item.units,
+          total: item.total.toFixed(2),
+        });
+        return item.id;
+      });
+      return this.view(tx, req, id);
+    });
+  }
+  @Post(':id/products/:itemId/remove')
+  removeProduct(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('itemId', ParseUUIDPipe) itemId: string,
+    @Body() body: unknown,
+    @Req() req: AuthRequest,
+  ) {
+    const input = parse(change, body);
+    requirePermission(req.identity, 'comandas.editar');
+    return this.db.$transaction(async (tx) => {
+      await command(tx, req, `order:${id}:product:${itemId}:remove`, input, async () => {
+        const before = await lockOrder(tx, req.identity, id);
+        openOrder(before);
+        checkVersion(before.version, input.version);
+        const item = await tx.orderProductItem.findFirst({
+          where: { id: itemId, salonId: before.salonId, orderId: id, movementId: null },
+        });
+        if (!item) throw new NotFoundException('Produto da comanda não encontrado.');
+        await tx.orderProductItem.delete({ where: { id: itemId } });
+        await recalculate(tx, id, before.salonId);
+        await catalogAudit(tx, req, 'salon_orders', id, 'PRODUTO_REMOVIDO', input.reason, {
+          itemId,
+          productId: item.productId,
+          units: item.units,
+          total: item.total.toFixed(2),
+        });
+        return id;
       });
       return this.view(tx, req, id);
     });
@@ -511,12 +648,15 @@ export class OrdersController {
         openOrder(before);
         checkVersion(before.version, input.version);
         const visits = await tx.visit.findMany({ where: { orderId: id, salonId: before.salonId } });
+        const productCount = await tx.orderProductItem.count({
+          where: { orderId: id, salonId: before.salonId },
+        });
         if (
-          !visits.some((v) => v.status === 'COMPLETED') ||
+          (!visits.some((v) => v.status === 'COMPLETED') && !productCount) ||
           visits.some((v) => ['WAITING', 'IN_PROGRESS'].includes(v.status))
         )
           throw new ConflictException(
-            'Conclua ou cancele os atendimentos. É necessário ao menos um atendimento concluído.',
+            'Conclua ou cancele os atendimentos. A comanda precisa de um serviço concluído ou produto.',
           );
         await recalculate(tx, id, before.salonId);
         const after = await tx.salonOrder.update({

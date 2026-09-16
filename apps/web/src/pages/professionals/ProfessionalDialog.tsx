@@ -146,7 +146,8 @@ export function ProfessionalDialog({
           )}
           {commissionAccess.isSuccess && !commissionAccess.data.all && (
             <p className="muted">
-              Comissão (%) só pode ser configurada por uma conta com o perfil Administrador do salão.
+              Comissão (%) só pode ser configurada por uma conta com o perfil Administrador do
+              salão.
             </p>
           )}
           <details>

@@ -9,6 +9,7 @@ import { ProductDialog } from './ProductDialog';
 import { MovementDialog } from './MovementDialog';
 import { HistoryDialog } from './HistoryDialog';
 import { quantity, capabilities, type Product } from './types';
+import { formatPrice } from '../services/types';
 
 export function ProductsPage({ permissions }: { permissions: string[] }) {
   const [search, setSearch] = useState('');
@@ -92,6 +93,7 @@ export function ProductsPage({ permissions }: { permissions: string[] }) {
                 <tr>
                   <th>PRODUTO</th>
                   <th>UNIDADE</th>
+                  <th>VENDA</th>
                   {canStock && <th>SALDO / MÍNIMO</th>}
                   <th>STATUS</th>
                   <th>
@@ -106,6 +108,11 @@ export function ProductsPage({ permissions }: { permissions: string[] }) {
                       <strong>{s.name}</strong>
                     </td>
                     <td data-label="Unidade">{s.baseUnit}</td>
+                    <td data-label="Venda">
+                      {s.salePrice
+                        ? `${formatPrice(s.salePrice)} por ${quantity(s.saleQuantity)} ${s.baseUnit}`
+                        : 'Sem preço'}
+                    </td>
                     {canStock && (
                       <td data-label="Saldo / mínimo">
                         {quantity(s.balance ?? '0')} / {quantity(s.minimum)} {s.baseUnit}
