@@ -80,7 +80,12 @@ export async function testFinance({
   );
   assert.equal((await post(path + '/checkout', body)).status, 409);
   assert.equal(
-    (await post(`/orders/${order.id}/cancel`, { version: data.order.version })).status,
+    (
+      await post(`/orders/${order.id}/cancel`, {
+        version: data.order.version,
+        reason: 'Teste de comanda fechada',
+      })
+    ).status,
     409,
   );
   assert.equal(
@@ -189,10 +194,24 @@ export async function testFinance({
     ).status,
     404,
   );
+  assert.equal(
+    (await post(path + '/void', { version: data.order.version, confirmed: true })).status,
+    400,
+  );
   const cancelKey = randomUUID(),
     cancel = await Promise.all([
-      post(path + '/void', { version: data.order.version, confirmed: true, requestKey: cancelKey }),
-      post(path + '/void', { version: data.order.version, confirmed: true, requestKey: cancelKey }),
+      post(path + '/void', {
+        version: data.order.version,
+        confirmed: true,
+        requestKey: cancelKey,
+        reason: 'Cancelar venda de teste',
+      }),
+      post(path + '/void', {
+        version: data.order.version,
+        confirmed: true,
+        requestKey: cancelKey,
+        reason: 'Cancelar venda de teste',
+      }),
     ]);
   assert.deepEqual(
     cancel.map((r) => r.status),
@@ -382,6 +401,7 @@ export async function testFinanceBrowser({ page, expect, root, join, prisma, sal
   });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.getByRole('button', { name: 'Cancelar venda e estornar', exact: true }).click();
+  await page.getByLabel('Motivo do cancelamento').fill('Cancelamento solicitado no teste');
   await page
     .getByLabel('Confirmo a devolução ou correção dos valores e os dados do estorno.')
     .check();

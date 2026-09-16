@@ -149,8 +149,15 @@ export function ActionDialog({
             <p>O histórico será mantido. Produtos já consumidos não voltarão ao estoque.</p>
           )}
           <label>
-            Motivo (opcional)
-            <textarea name="reason" rows={2} maxLength={500} />
+            {action === 'cancelOrder' || action === 'cancelVisit'
+              ? 'Motivo do cancelamento'
+              : 'Motivo (opcional)'}
+            <textarea
+              name="reason"
+              rows={2}
+              maxLength={500}
+              required={action === 'cancelOrder' || action === 'cancelVisit'}
+            />
           </label>
           {command.error && (
             <p className="error" role="alert">

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 export async function testOrders({
   request,
   prisma,
@@ -15,6 +16,37 @@ export async function testOrders({
   const admin = await prisma.salonUser.findFirstOrThrow({
     where: { salonId, user: { email: 'admin@example.test' } },
   });
+  const attendantRole = await prisma.role.findFirstOrThrow({
+    where: { salonId, code: 'ROLE_ATENDENTE' },
+    include: { permissions: { include: { permission: true } } },
+  });
+  assert.ok(attendantRole.permissions.some((p) => p.permission.code === 'comandas.cancelar'));
+  const cancelPermission = attendantRole.permissions.find(
+    (p) => p.permission.code === 'comandas.cancelar',
+  );
+  await prisma.rolePermission.delete({
+    where: {
+      roleId_permissionId: {
+        roleId: attendantRole.id,
+        permissionId: cancelPermission.permissionId,
+      },
+    },
+  });
+  await prisma.$executeRawUnsafe(
+    readFileSync(
+      new URL(
+        '../database/migrations/202609160003_attendant_cancel_orders/migration.sql',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  );
+  assert.equal(
+    await prisma.rolePermission.count({
+      where: { roleId: attendantRole.id, permissionId: cancelPermission.permissionId },
+    }),
+    1,
+  );
   const client = await prisma.client.create({
     data: { salonId, name: 'Cliente comandas', createdBy: admin.id, updatedBy: admin.id },
   });
@@ -243,7 +275,14 @@ export async function testOrders({
   const balance = (
     await prisma.product.findUniqueOrThrow({ where: { id: product.id } })
   ).balance.toFixed(6);
-  const cancelledSecond = await post(`/visits/${second.id}/cancel`, { version: second.version });
+  assert.equal(
+    (await post(`/visits/${second.id}/cancel`, { version: second.version })).status,
+    400,
+  );
+  const cancelledSecond = await post(`/visits/${second.id}/cancel`, {
+    version: second.version,
+    reason: 'Atendimento cancelado no teste',
+  });
   assert.equal(cancelledSecond.status, 201);
   order = (await get(`/orders/${order.id}`)).data;
   assert.equal(order.total, '85.30');
@@ -262,7 +301,23 @@ export async function testOrders({
     (await post(`/orders/${order.id}/discount`, { version: order.version, discount: '0' })).status,
     409,
   );
-  assert.equal((await post(`/orders/${order.id}/cancel`, { version: order.version })).status, 201);
+  assert.equal((await post(`/orders/${order.id}/cancel`, { version: order.version })).status, 400);
+  await prisma.userRole.create({
+    data: { salonId, membershipId: proMember.id, roleId: attendantRole.id },
+  });
+  assert.equal(
+    (
+      await post(
+        `/orders/${order.id}/cancel`,
+        { version: order.version, reason: 'Comanda cancelada no teste' },
+        proCookie,
+      )
+    ).status,
+    201,
+  );
+  await prisma.userRole.delete({
+    where: { membershipId_roleId: { membershipId: proMember.id, roleId: attendantRole.id } },
+  });
   assert.equal(
     (await prisma.product.findUniqueOrThrow({ where: { id: product.id } })).balance.toFixed(6),
     balance,
@@ -434,7 +489,7 @@ export async function testOrders({
       await request(`/appointments/${appointment.id}/status`, {
         method: 'PATCH',
         cookie,
-        body: { version: 1, status: 'CANCELLED' },
+        body: { version: 1, status: 'CANCELLED', reason: 'Tentativa em agendamento vinculado' },
       })
     ).status,
     409,
@@ -478,7 +533,12 @@ export async function testOrders({
     })
   ).data;
   assert.equal(
-    (await post(`/visits/${importedVisit.id}/cancel`, { version: importedVisit.version })).status,
+    (
+      await post(`/visits/${importedVisit.id}/cancel`, {
+        version: importedVisit.version,
+        reason: 'Cancelar atendimento importado',
+      })
+    ).status,
     201,
   );
   assert.equal(
@@ -496,7 +556,11 @@ export async function testOrders({
     },
   });
   assert.equal((await get(`/orders/${foreignOrder.id}`)).status, 404);
-  assert.equal((await post(`/orders/${foreignOrder.id}/cancel`, { version: 1 })).status, 404);
+  assert.equal(
+    (await post(`/orders/${foreignOrder.id}/cancel`, { version: 1, reason: 'Teste de escopo' }))
+      .status,
+    404,
+  );
   await assert.rejects(
     prisma.visit.create({
       data: {

@@ -17,8 +17,14 @@ export const reason = z
   .max(500)
   .nullish()
   .transform((v) => v ?? '');
+export const requiredCancelReason = z
+  .string()
+  .trim()
+  .min(1, 'Informe o motivo do cancelamento.')
+  .max(500);
 export const commandFields = { requestKey: z.string().uuid(), reason };
 export const change = z.object({ ...commandFields, version: z.number().int().positive() }).strict();
+export const cancelInput = change.extend({ reason: requiredCancelReason }).strict();
 export const orderInput = z
   .object({
     ...commandFields,

@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { z } from 'zod';
-import { change, cents, money } from '../orders/rules';
+import { change, cents, money, requiredCancelReason } from '../orders/rules';
 import { serviceInput, catalogQuery } from '../catalog/validation';
 import { dateInput } from '../appointments/validation';
 export const paymentMethod = z.enum(['CASH', 'PIX', 'CREDIT', 'DEBIT', 'OTHER']);
@@ -25,7 +25,9 @@ export const refundInput = change
     confirmed: z.literal(true),
   })
   .strict();
-export const voidInput = change.extend({ confirmed: z.literal(true) }).strict();
+export const voidInput = change
+  .extend({ confirmed: z.literal(true), reason: requiredCancelReason })
+  .strict();
 export const financeQuery = z
   .object({
     from: dateInput,

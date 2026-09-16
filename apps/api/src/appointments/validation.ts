@@ -70,4 +70,8 @@ export const statusInput = z
     status: z.enum(['SCHEDULED', 'CONFIRMED', 'ARRIVED', 'COMPLETED', 'NO_SHOW', 'CANCELLED']),
     reason: optionalReason,
   })
-  .strict();
+  .strict()
+  .refine((v) => v.status !== 'CANCELLED' || !!v.reason.trim(), {
+    message: 'Informe o motivo do cancelamento.',
+    path: ['reason'],
+  });

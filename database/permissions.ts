@@ -74,6 +74,7 @@ export const initialRoles: Record<string, { name: string; permissions: readonly 
       'comandas.visualizar_todas',
       'comandas.abrir',
       'comandas.editar',
+      'comandas.cancelar',
       'produtos.visualizar',
       'produtos.criar',
       'estoque.visualizar',

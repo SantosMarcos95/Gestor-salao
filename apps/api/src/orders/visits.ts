@@ -22,6 +22,7 @@ import { catalogAudit } from '../catalog/shared';
 import { decimalString, scaled } from '../inventory/validation';
 import {
   change,
+  cancelInput,
   checkVersion,
   command,
   consumeInput,
@@ -192,7 +193,7 @@ export class VisitsController {
     @Body() body: unknown,
     @Req() req: AuthRequest,
   ) {
-    const input = parse(change, body);
+    const input = parse(cancelInput, body);
     requirePermission(req.identity, 'comandas.cancelar');
     return this.db.$transaction(async (tx) => {
       const authorized = await this.view(tx, req, id);

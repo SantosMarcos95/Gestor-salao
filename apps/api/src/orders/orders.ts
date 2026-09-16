@@ -22,6 +22,7 @@ import { catalogAudit } from '../catalog/shared';
 import { scope as agendaScope } from '../appointments/rules';
 import {
   change,
+  cancelInput,
   checkVersion,
   command,
   commandFields,
@@ -787,7 +788,7 @@ export class OrdersController {
   }
   @Post(':id/cancel')
   cancel(@Param('id', ParseUUIDPipe) id: string, @Body() body: unknown, @Req() req: AuthRequest) {
-    const input = parse(change, body);
+    const input = parse(cancelInput, body);
     requirePermission(req.identity, 'comandas.cancelar');
     return this.db.$transaction(async (tx) => {
       await command(tx, req, `order:${id}:cancel`, input, async () => {

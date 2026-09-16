@@ -224,7 +224,10 @@ export async function testCommissionsCash({
   assert.deepEqual(simultaneousOpen.map((r) => r.status).sort(), [201, 409]);
   const reopened = simultaneousOpen.find((r) => r.status === 201);
   assert.equal(reopened.status, 201);
-  const voided = await post(`/payments/${order.id}/void`, { version: repaid.data.order.version });
+  const voided = await post(`/payments/${order.id}/void`, {
+    version: repaid.data.order.version,
+    reason: 'Cancelar venda e comissões',
+  });
   assert.equal(voided.status, 201, JSON.stringify(voided.data));
   assert.equal(
     Number(
@@ -279,8 +282,12 @@ export async function testCommissionsCash({
   if (race[0].status === 201) {
     assert.equal((await get(`/cash/${reopened.data.id}`)).data.expected, '200.00');
     assert.equal(
-      (await post(`/payments/${raceOrder.id}/void`, { version: race[0].data.order.version }))
-        .status,
+      (
+        await post(`/payments/${raceOrder.id}/void`, {
+          version: race[0].data.order.version,
+          reason: 'Cancelar venda após corrida',
+        })
+      ).status,
       201,
     );
   } else {

@@ -81,8 +81,8 @@ export function RefundDialog({
             Confirmo a devolução ou correção dos valores e os dados do estorno.
           </label>
           <label>
-            Motivo (opcional)
-            <textarea name="reason" rows={2} maxLength={500} />
+            {cancel ? 'Motivo do cancelamento' : 'Motivo (opcional)'}
+            <textarea name="reason" rows={2} maxLength={500} required={cancel} />
           </label>
           {command.error && (
             <p className="error" role="alert">

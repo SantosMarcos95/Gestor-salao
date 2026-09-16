@@ -294,6 +294,11 @@ export async function testAppointments({
   const details = (await request(`/appointments/${a.id}`, { cookie })).data;
   assert.equal(details.history.length, 3);
   assert.equal(details.status, 'CONFIRMED');
+  assert.equal(
+    (await patch(a.id, { version: 3, status: 'CANCELLED', reason: '   ' }, cookie, '/status'))
+      .status,
+    400,
+  );
   const cancellations = await Promise.all(
     [1, 2].map(() => patch(a.id, { version: 3, status: 'CANCELLED', reason }, cookie, '/status')),
   );
@@ -528,7 +533,7 @@ export async function testAppointmentsBrowser({ page, expect, root, join, prisma
   await page.getByText('Histórico do agendamento (últimas 50 alterações)', { exact: true }).click();
   await expect(page.getByText('Edição', { exact: true })).toBeVisible();
   await page.getByLabel('Novo status').selectOption('CANCELLED');
-  await page.getByLabel('Motivo da alteração').fill('Cliente solicitou cancelamento');
+  await page.getByLabel('Motivo do cancelamento').fill('Cliente solicitou cancelamento');
   await page.getByRole('button', { name: 'Atualizar status', exact: true }).click();
   await page.getByRole('dialog').waitFor({ state: 'hidden' });
   await expect(

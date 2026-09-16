@@ -31,6 +31,7 @@ export function AppointmentDetail({
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [newStatus, setNewStatus] = useState('');
   const command = useCommand();
   const navigate = useNavigate();
   const detail = useQuery({
@@ -158,7 +159,16 @@ export function AppointmentDetail({
 
             {a.visit && (
               <div className="panel">
-                <p>Este agendamento está vinculado a uma comanda.</p>
+                <p>
+                  Este agendamento está vinculado a uma comanda. Registre chegada e conclusão pelo
+                  atendimento na comanda.
+                </p>
+                {['SCHEDULED', 'CONFIRMED', 'ARRIVED'].includes(a.status) && (
+                  <p>
+                    Para cancelar este agendamento enquanto a comanda estiver aberta, cancele a
+                    comanda. O status na agenda será atualizado automaticamente.
+                  </p>
+                )}
                 {permissions.some((p) =>
                   ['comandas.visualizar_todas', 'comandas.visualizar_proprias'].includes(p),
                 ) && (
@@ -184,7 +194,12 @@ export function AppointmentDetail({
                 <fieldset className="access-fields" disabled={busy}>
                   <label>
                     Novo status
-                    <select name="status" required defaultValue="">
+                    <select
+                      name="status"
+                      required
+                      value={newStatus}
+                      onChange={(e) => setNewStatus(e.target.value)}
+                    >
                       <option value="">Selecione</option>
                       {available.map((s) => (
                         <option key={s} value={s}>
@@ -194,8 +209,15 @@ export function AppointmentDetail({
                     </select>
                   </label>
                   <label>
-                    Motivo da alteração (opcional)
-                    <textarea name="reason" maxLength={500} rows={2} />
+                    {newStatus === 'CANCELLED'
+                      ? 'Motivo do cancelamento'
+                      : 'Motivo da alteração (opcional)'}
+                    <textarea
+                      name="reason"
+                      maxLength={500}
+                      rows={2}
+                      required={newStatus === 'CANCELLED'}
+                    />
                   </label>
                   {error && (
                     <p className="error" role="alert">
