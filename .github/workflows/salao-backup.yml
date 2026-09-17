@@ -85,3 +85,4 @@ jobs:
           set -euo pipefail
           node scripts/backup-job.mjs run
           node scripts/backup-job.mjs check
+          node scripts/offsite-maintenance.mjs prune

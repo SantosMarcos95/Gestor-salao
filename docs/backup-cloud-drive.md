@@ -15,7 +15,19 @@ Neon de um segredo, produz dump custom, valida com `pg_restore --list`, cifra
 com AES-256-GCM, envia dump e manifesto ao remoto `drive_salao:backups`, lê
 ambos de volta para verificar SHA-256 e executa `backup:check`. Não publica
 artifacts do GitHub nem guarda dump no repositório. O runner é temporário;
-arquivos locais somem ao fim do job. Não há retenção automática no Drive.
+arquivos locais somem ao fim do job. Após cada nova cópia confirmada, a rotina
+de retenção remove pares completos com mais de 90 dias, preservando sempre os
+sete pares completos mais recentes. Cópias incompletas não são removidas
+automaticamente para permitir investigação.
+
+O workflow `salao-backup-monitor.yml` consulta o Drive todos os dias às 11h17
+de São Paulo e falha se não houver um par completo recente (até 36 horas).
+Ele não exige conexão com o banco. As falhas dos workflows ficam visíveis no
+GitHub Actions; a entrega de aviso por e-mail depende das preferências de
+notificação da conta GitHub. Como os dois workflows usam o agendador do GitHub,
+um serviço externo ainda seria necessário para detectar falha do próprio
+agendador. A primeira execução automática e a primeira verificação agendada
+ainda precisam ser observadas.
 
 ## Ativação concluída em 17/09
 

@@ -1,0 +1,47 @@
+name: Monitor do backup do salao
+
+on:
+  schedule:
+    - cron: '17 11 * * *'
+      timezone: America/Sao_Paulo
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event_name == 'workflow_dispatch' || vars.BACKUP_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar rclone verificado
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            https://downloads.rclone.org/v1.75.1/rclone-v1.75.1-linux-amd64.zip \
+            --output "$RUNNER_TEMP/rclone.zip"
+          printf '%s  %s\n' \
+            '982b5aa772841168f8e380f139e9e787b2a105403e32b94da8676a0e1c0a13ab' \
+            "$RUNNER_TEMP/rclone.zip" | sha256sum --check --status
+          unzip -p "$RUNNER_TEMP/rclone.zip" \
+            rclone-v1.75.1-linux-amd64/rclone > "$RUNNER_TEMP/rclone"
+          sudo install -m 0755 "$RUNNER_TEMP/rclone" /usr/local/bin/rclone
+
+      - name: Conferir copia recente no Drive
+        shell: bash
+        env:
+          BACKUP_RCLONE_CONFIG: ${{ secrets.BACKUP_RCLONE_CONFIG }}
+          BACKUP_REMOTE: drive_salao:backups
+          BACKUP_MAX_AGE_HOURS: '36'
+          RCLONE_CONFIG: ${{ runner.temp }}/salao-backup/rclone.conf
+        run: |
+          set -euo pipefail
+          test -n "$BACKUP_RCLONE_CONFIG"
+          umask 077
+          mkdir -p "$RUNNER_TEMP/salao-backup"
+          printf '%s' "$BACKUP_RCLONE_CONFIG" > "$RCLONE_CONFIG"
+          node scripts/offsite-maintenance.mjs check
