@@ -18,6 +18,15 @@ Fundação implementada e primeiros fluxos de autenticação/clientes/auditoria 
 
 ## Próximas fases
 
+### Próxima prioridade solicitada — avisos de agenda por WhatsApp
+
+O usuário quer iniciar a próxima etapa por esta função e colocá-la em operação:
+
+1. Enviar ao cliente um lembrete do serviço por WhatsApp **24 horas antes do início do agendamento**, no horário de São Paulo. Exemplo: serviço em 18/09/2026 às 16h → lembrete em 17/09/2026 às 16h. O texto deve identificar data, hora e serviço agendado.
+2. Enviar **todos os dias às 10h**, no horário de São Paulo, a cada funcionário um resumo da **própria agenda do dia seguinte** por WhatsApp.
+
+Antes de ativar: escolher e configurar o provedor oficial de WhatsApp e os modelos de mensagem, confirmar telefone e autorização de contato dos destinatários, definir tratamento de agendamentos criados/remarcados/cancelados dentro da janela de 24 horas, impedir envios duplicados e registrar entrega/falha com possibilidade de nova tentativa. Validar o conteúdo por salão e profissional para não revelar a agenda de outra pessoa. Esta função está **planejada, ainda não implementada nem ativa**.
+
 1. **Acesso e cadastros:** usuários e perfis entregues com último administrador protegido; troca de senha e recuperação assistida entregues; profissionais e serviços entregues com preço/duração e vínculo opcional profissional–usuário; jornadas, bloqueios e serviços realizados por cada profissional entregues. Agenda entregue na etapa seguinte. Recuperação por e-mail depende de configurar um serviço de envio. Toda mudança administrativa auditada.
 2. **Agenda — entregue:** grade dia/semana com colunas dinâmicas, filtro de profissional e paginação da equipe; vínculo profissional–usuário; agendamento multisserviço com preço/duração históricos; remarcação, status e histórico; bloqueio transacional contra sobreposição; cancelamento com motivo; filtros de agenda própria em consultas, opções e detalhes. Exceções de sobreposição permanecem desabilitadas.
 3. **Produtos e estoque — entregue:** unidade-base fixa, embalagens compatíveis, fornecedores, entradas, perdas, baixas manuais, ajustes de inventário e estoque mínimo. Quantidade decimal exata; movimento, saldo e auditoria na mesma transação; idempotência e edição concorrente. Saldo compartilhado pelo salão, negativo bloqueado. Custo por unidade-base opcional em entradas, com consulta restrita; custo médio, lotes, transferências e separação por unidade continuam fora desta etapa.

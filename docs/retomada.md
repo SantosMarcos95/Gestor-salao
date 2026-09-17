@@ -1,5 +1,9 @@
 # Retomada — atualizada em 17/09/2026
 
+## Próxima prioridade pedida pelo usuário — WhatsApp da agenda
+
+Usuário solicitou registrar no cronograma e começar a próxima implementação por lembrete ao cliente exatamente 24 horas antes do serviço (exemplo: 18/09/2026 às 16h → 17/09/2026 às 16h) e resumo da agenda do dia seguinte para cada funcionário diariamente às 10h, no horário de São Paulo. Objetivo é colocar ambos em funcionamento; nenhum envio foi implementado ou ativado nesta solicitação. Escopo e cuidados de operação em `docs/roadmap.md`.
+
 ## Estado atual — backup diário na nuvem ativo
 
 Em 17/09, o workflow com cliente PostgreSQL 18 foi publicado no commit `dc41637`. A execução manual GitHub Actions `35262437640` terminou com sucesso: dump real do Neon, criptografia AES-256-GCM, envio do dump e manifesto ao Drive, leitura de volta e conferência. Os arquivos `backup-bIqiYU.dump.enc` e `backup-bIqiYU.manifest.json` foram baixados para ensaio: manifesto e SHA-256 conferidos, dump descriptografado, `pg_restore --list` aprovado e restauração em PostgreSQL 18.6 isolado concluída. Consulta somente agregada encontrou 37 tabelas, 13 migrations, 412 constraints e 19 triggers. O Neon não foi modificado. O banco de ensaio foi parado e todo o diretório temporário, incluindo dump em texto claro, removido. Usuário confirmou que guardou a chave fora do PC. GitHub confirmou `BACKUP_ENABLED=true` em 17/09 às 19:38 UTC; agendamento diário às 03h17 de São Paulo está ativo. Ainda não ocorreu a primeira execução automática, que deve ser conferida após o próximo horário. Política de retenção no Drive, aviso automático de ausência de execução e alerta externo de falha continuam pendentes; e-mail de falhas do GitHub depende das preferências da conta.
