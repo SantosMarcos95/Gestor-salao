@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup criptografado do salao para Google Drive
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/marcos_paulo/salao-gestao
+ExecStart=/home/marcos_paulo/.nvm/versions/node/v20.20.2/bin/node /home/marcos_paulo/salao-gestao/scripts/backup-local.mjs run
+UMask=0077
+TimeoutStartSec=2h
+NoNewPrivileges=true

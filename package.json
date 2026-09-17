@@ -30,6 +30,7 @@
     "test:recovery": "npm run build && BACKUP_TEST=1 RECOVERY_BROWSER_TEST=1 node tests/integration.mjs",
     "backup:run": "node scripts/backup-job.mjs run",
     "backup:check": "node scripts/backup-job.mjs check",
+    "backup:decrypt": "node scripts/backup-job.mjs decrypt",
     "test:backup-job": "node --test tests/backup-job.mjs"
   },
   "devDependencies": {

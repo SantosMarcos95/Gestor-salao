@@ -1,6 +1,6 @@
 # Modelos de agendamento local
 
-Estado: modelos preparados, não instalados nem ativados. Dependem de servidor Linux com systemd. A rotina ainda não envia cópias externas ou notificações e não remove arquivos antigos.
+Estado: modelos preparados, não instalados nem ativados. Dependem de Linux com systemd. O programa já suporta cópia externa criptografada e aviso HTTPS de falha, mas Drive, chave, receptor e timers não estão configurados. Não remove arquivos antigos.
 
 ## Configuração prevista
 
@@ -20,9 +20,9 @@ Frequência e limite são valores iniciais do modelo, ainda não uma política a
 
 1. Provisionar Node compatível com o projeto, clientes PostgreSQL, código compilado e dependências. Ajustar os caminhos nas unidades; `ProtectHome=true` impede usar uma instalação dentro de `/home`. O usuário do serviço deve conseguir ler o código, sem permissão para alterá-lo.
 2. Criar a conta de serviço e o diretório privado. Provisionar uma conta PostgreSQL com acesso suficiente para o dump e testar as permissões. Não presumir que as credenciais da aplicação servem para produção.
-3. Criar `/etc/salao-backup.env` a partir de `backup.env.example`, substituindo os campos no próprio servidor, sem registrar segredos no Git. Proteger com proprietário root e modo 0600. Criar separadamente `/etc/salao-backup-check.env` a partir de `backup-check.env.example`; a verificação dispensa credenciais do banco.
+3. Configurar `rclone` com Google Drive para a conta do serviço e testar um arquivo sem dados reais. Guardar `rclone.conf` em `/var/lib/salao-backup/rclone.conf`, modo 0600 e proprietário `salao-backup`; a unidade usa `ProtectHome=true`. Criar `/etc/salao-backup.env` a partir de `backup.env.example`, substituindo os campos no próprio servidor, sem registrar segredos no Git. Guardar a chave de criptografia fora desse computador. Proteger o arquivo com proprietário root e modo 0600, acessível ao serviço via systemd. Criar separadamente `/etc/salao-backup-check.env` a partir de `backup-check.env.example`; a verificação dispensa credenciais do banco. Configurar e testar o receptor HTTPS de alertas.
 4. Validar as quatro unidades com `systemd-analyze verify` no servidor. Conferir o horário com `systemd-analyze calendar '*-*-* 03:00:00 America/Sao_Paulo'`.
-5. Depois de definir destino e política e autorizar a ativação, instalar as unidades em `/etc/systemd/system`, executar `systemctl daemon-reload` e iniciar manualmente `salao-backup.service`, seguido de `salao-backup-check.service`. Conferir arquivo, checksum e restauração isolada antes de habilitar os dois timers com `systemctl enable --now salao-backup.timer salao-backup-check.timer`.
+5. Depois de definir destino e política e autorizar a ativação, instalar as unidades em `/etc/systemd/system`, executar `systemctl daemon-reload` e iniciar manualmente `salao-backup.service`, seguido de `salao-backup-check.service`. Conferir arquivo local e externo, checksum e restauração isolada antes de habilitar os dois timers com `systemctl enable --now salao-backup.timer salao-backup-check.timer`.
 6. Conferir `systemctl list-timers 'salao-backup*'` e os registros com `journalctl -u salao-backup.service -u salao-backup-check.service`. Saída 1 deixa a unidade em falha. Configurar monitor externo e destinatário para que a falha chegue ao responsável; journal sozinho não é notificação.
 
 O serviço de backup tem limite de uma hora; a verificação, 15 minutos. Ajustar após medir com volume representativo. Interrupção pode deixar `job.lock`; investigar conforme [procedimento de backup](../../docs/backup-restauracao.md) antes de remover o bloqueio. Confirmar espaço livre, pois os modelos não implementam retenção.

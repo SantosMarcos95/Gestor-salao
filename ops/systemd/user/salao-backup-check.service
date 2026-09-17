@@ -1,0 +1,10 @@
+[Unit]
+Description=Verificar backup criptografado do salao
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/marcos_paulo/salao-gestao
+ExecStart=/home/marcos_paulo/.nvm/versions/node/v20.20.2/bin/node /home/marcos_paulo/salao-gestao/scripts/backup-local.mjs check
+UMask=0077
+TimeoutStartSec=20m
+NoNewPrivileges=true

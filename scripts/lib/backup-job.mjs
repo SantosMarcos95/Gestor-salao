@@ -15,7 +15,11 @@ async function save(file, value) {
   await rename(temporary, file);
 }
 
-export async function runBackupJob({ directory, databaseUrl }, createBackup = backup) {
+export async function runBackupJob(
+  { directory, databaseUrl },
+  createBackup = backup,
+  publish = null,
+) {
   if (!directory || !databaseUrl) throw new Error('Configuração de backup incompleta.');
   directory = resolve(directory);
   await mkdir(directory, { recursive: true, mode: 0o700 });
@@ -42,7 +46,12 @@ export async function runBackupJob({ directory, databaseUrl }, createBackup = ba
     await save(file, state);
     try {
       const folder = await createBackup(databaseUrl, directory);
-      state.lastSuccess = { folder, completedAt: new Date().toISOString() };
+      const offsite = publish ? await publish(folder) : null;
+      state.lastSuccess = {
+        folder,
+        completedAt: new Date().toISOString(),
+        ...(offsite && { offsite }),
+      };
       state.state = 'success';
       await save(file, state);
       return state;
@@ -58,11 +67,18 @@ export async function runBackupJob({ directory, databaseUrl }, createBackup = ba
   }
 }
 
-export async function checkBackup(directory, maxAgeHours = 26, now = Date.now()) {
+export async function checkBackup(
+  directory,
+  maxAgeHours = 26,
+  now = Date.now(),
+  requireOffsite = false,
+) {
   if (!directory || !Number.isFinite(maxAgeHours) || maxAgeHours <= 0 || maxAgeHours > 8760)
     throw new Error('Configuração de monitoramento inválida.');
   const state = JSON.parse(await readFile(join(directory, 'status.json'), 'utf8'));
   const success = state.lastSuccess;
+  if (requireOffsite && (!success?.offsite?.sha256 || !success.offsite.target))
+    throw new Error('ALERTA: cópia externa não confirmada.');
   const age = now - Date.parse(success?.completedAt);
   if (
     state.version !== 1 ||

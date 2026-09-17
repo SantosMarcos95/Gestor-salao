@@ -92,3 +92,37 @@ Após interrupção abrupta, o bloqueio pode permanecer. Antes de remover manual
 Validação específica: `npm run test:backup-job`, com arquivos fictícios temporários, cobre sucesso, atraso, corrupção, falha sem vazamento de segredo, nova tentativa, concorrência, bloqueio órfão e caminho inválido. Não acessa o banco do salão.
 
 Esta entrega prepara comandos e ensaio; não ativa proteção automática dos dados reais. Antes de produção, escolher destino externo, criptografia, responsável, frequência e retenção; definir perda de dados tolerável (RPO) e prazo de recuperação (RTO); configurar agendamento e alerta de falha; medir restauração de volume representativo; fazer ensaio recorrente e registrar evidência. Uma cópia no mesmo computador não protege contra perda do equipamento. Backup lógico não permite recuperação ponto a ponto entre cópias; isso exige política adicional de WAL/PITR.
+
+# Cópia externa criptografada (preparada em 16/09/2026)
+
+`backup:run` agora aceita `BACKUP_REMOTE` no formato `nome_rclone:pasta` e
+`BACKUP_ENCRYPTION_KEY` com 32 bytes em hexadecimal (64 caracteres). Com ambos
+configurados, o dump é cifrado com AES-256-GCM, enviado por `rclone copyto` e
+lido de volta com `rclone cat` para conferir tamanho e SHA-256. O manifesto
+com o checksum do dump original também é enviado e conferido. O estado só
+registra sucesso depois dessas verificações. O arquivo temporário cifrado é
+apagado; o dump local permanece privado para recuperação rápida. Nenhuma
+limpeza automática dos backups locais ou externos está configurada.
+
+Gere a chave em ambiente privado com `openssl rand -hex 32`; guarde uma cópia
+fora do computador de backup. Quem perder a chave não poderá recuperar as
+cópias externas. Não registre a chave no Git, em mensagens ou capturas.
+
+Para recuperar uma cópia externa: baixe os arquivos `.dump.enc` e
+`.manifest.json` do mesmo nome para uma pasta privada, configure a chave em
+`BACKUP_ENCRYPTION_KEY` e execute `npm run backup:decrypt -- arquivo.dump.enc
+database.dump`. Confira `sha256sum database.dump` contra o valor `sha256` do
+manifesto. Depois use o procedimento de restauração em banco isolado deste
+documento, colocando `database.dump` e `manifest.json` na mesma pasta. A
+descriptografia recusa chave errada ou arquivo adulterado e apaga a saída
+parcial.
+
+`backup:check` aceita `BACKUP_REQUIRE_OFFSITE=true` para exigir o último envio
+confirmado. Tanto execução quanto verificação saem com código 1 em falha.
+`BACKUP_ALERT_WEBHOOK_URL` opcional envia um POST HTTPS genérico de falha;
+exige um receptor de alertas configurado e testado para avisar alguém. O
+endereço pode conter token e deve ficar apenas em arquivo de ambiente privado.
+
+**Estado operacional:** implementação e testes com fixtures concluídos; Drive,
+agendador, chave preservada fora do executor e destinatário de alerta ainda
+não conectados. Não há backup automático externo dos dados reais neste marco.

@@ -1,0 +1,10 @@
+[Unit]
+Description=Verificacao horaria do backup do salao
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+Unit=salao-backup-check.service
+
+[Install]
+WantedBy=timers.target

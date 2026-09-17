@@ -1,10 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile, readFile, stat } from 'node:fs/promises';
+import { mkdtemp, writeFile, readFile, stat, chmod } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runBackupJob, checkBackup } from '../scripts/lib/backup-job.mjs';
 import { digest } from '../scripts/lib/backup.mjs';
+import { decryptBackup, encryptBackup, publishOffsite } from '../scripts/lib/offsite-backup.mjs';
 
 async function fakeBackup(_, directory) {
   const folder = await mkdtemp(join(directory, 'backup-'));
@@ -93,4 +94,59 @@ test('recusa pasta fora do diretório e subpasta com prefixo semelhante', async 
     await writeFile(join(directory, 'status.json'), JSON.stringify(status));
     await assert.rejects(checkBackup(directory), /Registro de backup inválido/);
   }
+});
+
+test('criptografia autenticada recupera o dump e rejeita chave errada', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'salao-crypto-'));
+  const input = join(directory, 'dump');
+  const encrypted = join(directory, 'dump.enc');
+  const restored = join(directory, 'restored');
+  const key = 'ab'.repeat(32);
+  await writeFile(input, 'fixture privada');
+  await encryptBackup(input, encrypted, key);
+  assert.equal((await readFile(encrypted)).includes('fixture privada'), false);
+  await decryptBackup(encrypted, restored, key);
+  assert.equal(await readFile(restored, 'utf8'), 'fixture privada');
+  await assert.rejects(
+    decryptBackup(encrypted, join(directory, 'wrong'), 'cd'.repeat(32)),
+    /autenticação/,
+  );
+  const altered = await readFile(encrypted);
+  altered[25] ^= 1;
+  await writeFile(join(directory, 'altered.enc'), altered);
+  await assert.rejects(
+    decryptBackup(join(directory, 'altered.enc'), join(directory, 'altered.dump'), key),
+    /autenticação/,
+  );
+});
+
+test('sucesso externo exige confirmação e falha de envio não registra sucesso', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'salao-offsite-'));
+  const remoteRoot = join(directory, 'remote');
+  const rclone = join(directory, 'rclone-fixture');
+  await writeFile(rclone, '#!/bin/sh\nexit 1\n');
+  await chmod(rclone, 0o700);
+  const config = { directory, databaseUrl: 'fixture' };
+  const publish = (folder) =>
+    publishOffsite(folder, {
+      remote: `fixture:${remoteRoot}`,
+      keyHex: 'ab'.repeat(32),
+      rclone,
+    });
+  await assert.rejects(runBackupJob(config, fakeBackup, publish), /Backup falhou/);
+  assert.equal(JSON.parse(await readFile(join(directory, 'status.json'))).state, 'failed');
+  const working = join(directory, 'rclone-working');
+  await writeFile(
+    working,
+    `#!/bin/sh\ntarget="${remoteRoot}/\${3##*/}"\ncase "$1" in\n  copyto) mkdir -p "${remoteRoot}"; cp "$2" "$target";;\n  cat) cat "${remoteRoot}/\${2##*/}";;\nesac\n`,
+  );
+  await chmod(working, 0o700);
+  await runBackupJob(config, fakeBackup, (folder) =>
+    publishOffsite(folder, {
+      remote: `fixture:${remoteRoot}`,
+      keyHex: 'ab'.repeat(32),
+      rclone: working,
+    }),
+  );
+  assert.equal((await checkBackup(directory, 26, Date.now(), true)).state, 'ok');
 });

@@ -1,0 +1,78 @@
+name: Backup do salao
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+      timezone: America/Sao_Paulo
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: salao-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    if: vars.BACKUP_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.20.2'
+
+      - name: Instalar clientes PostgreSQL 17 e rclone
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo install -d -m 0755 /usr/share/postgresql-common/pgdg
+          sudo curl --fail --silent --show-error --location \
+            https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+            --output /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc
+          printf '%s\n' \
+            'Types: deb' \
+            'URIs: https://apt.postgresql.org/pub/repos/apt' \
+            'Suites: noble-pgdg' \
+            'Components: main' \
+            'Signed-By: /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc' \
+            | sudo tee /etc/apt/sources.list.d/pgdg.sources >/dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 rclone
+          /usr/lib/postgresql/17/bin/pg_dump --version
+          rclone version | head -1
+
+      - name: Preparar dependências e configuração privada
+        shell: bash
+        env:
+          BACKUP_DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+          BACKUP_RCLONE_CONFIG: ${{ secrets.BACKUP_RCLONE_CONFIG }}
+        run: |
+          set -euo pipefail
+          test -n "$BACKUP_DATABASE_URL"
+          test -n "$BACKUP_ENCRYPTION_KEY"
+          test -n "$BACKUP_RCLONE_CONFIG"
+          npm ci --ignore-scripts --no-audit --no-fund
+          umask 077
+          mkdir -p "$RUNNER_TEMP/salao-backup"
+          printf '%s' "$BACKUP_RCLONE_CONFIG" > "$RUNNER_TEMP/salao-backup/rclone.conf"
+          test -s "$RUNNER_TEMP/salao-backup/rclone.conf"
+
+      - name: Criar, criptografar e verificar copia externa
+        shell: bash
+        env:
+          BACKUP_DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+          BACKUP_ALERT_WEBHOOK_URL: ${{ secrets.BACKUP_ALERT_WEBHOOK_URL }}
+          BACKUP_DIRECTORY: ${{ runner.temp }}/salao-backup/dumps
+          BACKUP_REMOTE: drive_salao:backups
+          BACKUP_REQUIRE_OFFSITE: 'true'
+          RCLONE_CONFIG: ${{ runner.temp }}/salao-backup/rclone.conf
+          POSTGRES_BIN: /usr/lib/postgresql/17/bin
+        run: |
+          set -euo pipefail
+          node scripts/backup-job.mjs run
+          node scripts/backup-job.mjs check
