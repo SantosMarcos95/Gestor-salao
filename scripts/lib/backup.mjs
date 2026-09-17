@@ -22,6 +22,7 @@ function connection(value) {
   url.searchParams.delete('schema');
   const allowed = new Set([
     'sslmode',
+    'channel_binding',
     'sslrootcert',
     'sslcert',
     'sslkey',

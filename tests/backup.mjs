@@ -49,7 +49,9 @@ async function inventory(url) {
 
 export async function testBackup(databaseUrl, directory, exerciseRestored) {
   const before = await inventory(databaseUrl);
-  const folder = await backup(databaseUrl, join(directory, 'backups'));
+  const backupUrl = new URL(databaseUrl);
+  backupUrl.searchParams.set('channel_binding', 'disable');
+  const folder = await backup(backupUrl.toString(), join(directory, 'backups'));
   const target = new URL(databaseUrl);
   target.pathname = '/salao_restore_ensaio';
   const dump = join(folder, 'database.dump');
