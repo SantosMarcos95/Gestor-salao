@@ -1,12 +1,13 @@
 # Backup diário na nuvem para Google Drive
 
 Escolha final do usuário em 17/09/2026: executar diariamente na nuvem, sem
-depender de o computador atual estar ligado. O workflow preparado em
+depender de o computador atual estar ligado. O workflow ativo em
 `.github/workflows/salao-backup.yml` usa GitHub Actions às 03h17 no fuso
 `America/Sao_Paulo` e permite execução manual mesmo com o agendamento
-desativado. A rotina agendada depende da variável `BACKUP_ENABLED=true`.
-Os três Secrets necessários já foram cadastrados; nenhum backup real foi
-disparado até este registro.
+desativado. A variável `BACKUP_ENABLED=true` foi conferida no GitHub em 17/09;
+os três Secrets necessários foram cadastrados. Execução manual
+`35262437640` passou, com backup real e restauração isolada conferidos.
+Conferir a primeira execução automática após o próximo horário agendado.
 
 O job instala cliente PostgreSQL 18, rclone 1.75.1 com SHA-256 conferido e
 dependências Node. Lê a conexão
@@ -16,7 +17,7 @@ ambos de volta para verificar SHA-256 e executa `backup:check`. Não publica
 artifacts do GitHub nem guarda dump no repositório. O runner é temporário;
 arquivos locais somem ao fim do job. Não há retenção automática no Drive.
 
-## Passos para ativação
+## Ativação concluída em 17/09
 
 1. Guardar `BACKUP_ENCRYPTION_KEY` de `.local/backup.env` fora do computador.
    Sem ela, a cópia cifrada não pode ser recuperada. Não enviar chave ou
@@ -27,16 +28,16 @@ arquivos locais somem ao fim do job. Não há retenção automática no Drive.
    semana. Nomear o remoto `drive_salao` e usar escopo `drive.file`.
 3. Testar envio/leitura de arquivo fictício e proteger `.local/rclone.conf`
    com modo 0600. Ele contém token de acesso e não deve ir para o Git.
-4. Cadastrar no GitHub Actions Secrets do repositório (concluído em 17/09):
+4. Cadastrados no GitHub Actions Secrets do repositório:
    `BACKUP_DATABASE_URL` (valor privado de `.local/neon.env`),
    `BACKUP_ENCRYPTION_KEY` (de `.local/backup.env`) e
    `BACKUP_RCLONE_CONFIG` (conteúdo inteiro de `.local/rclone.conf`). O
-   assistente pode usar `gh secret set` localmente para evitar copiar valores
+   assistente usou `gh secret set` localmente sem copiar valores
    pela conversa. `BACKUP_ALERT_WEBHOOK_URL` é opcional. Os nomes dos segredos
    podem ser conferidos sem mostrar seus valores.
-5. Publicar o workflow na branch principal, disparar uma execução manual e
-   conferir status, arquivos no Drive e restauração em banco isolado. Só
-   depois ativar a variável `BACKUP_ENABLED=true` para a rotina diária.
+5. Workflow publicado na branch principal. Execução manual aprovada, arquivos
+   no Drive conferidos e restauração em banco isolado aprovada. Depois disso,
+   variável `BACKUP_ENABLED=true` ativada e conferida.
 6. Habilitar notificações por e-mail para falhas de GitHub Actions nas
    preferências da conta. Um monitor externo de ausência de execução ainda
    é recomendado porque jobs agendados podem atrasar ou ser descartados.
