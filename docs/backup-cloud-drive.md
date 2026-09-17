@@ -8,7 +8,7 @@ desativado. A rotina agendada depende da variável `BACKUP_ENABLED=true`.
 Os três Secrets necessários já foram cadastrados; nenhum backup real foi
 disparado até este registro.
 
-O job instala cliente PostgreSQL 17, rclone 1.75.1 com SHA-256 conferido e
+O job instala cliente PostgreSQL 18, rclone 1.75.1 com SHA-256 conferido e
 dependências Node. Lê a conexão
 Neon de um segredo, produz dump custom, valida com `pg_restore --list`, cifra
 com AES-256-GCM, envia dump e manifesto ao remoto `drive_salao:backups`, lê

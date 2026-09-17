@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: '20.20.2'
 
-      - name: Instalar clientes PostgreSQL 17 e rclone
+      - name: Instalar clientes PostgreSQL 18 e rclone
         shell: bash
         run: |
           set -euo pipefail
@@ -40,7 +40,7 @@ jobs:
             'Signed-By: /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc' \
             | sudo tee /etc/apt/sources.list.d/pgdg.sources >/dev/null
           sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client-17 unzip
+          sudo apt-get install -y -qq postgresql-client-18 unzip
           curl --fail --silent --show-error --location \
             https://downloads.rclone.org/v1.75.1/rclone-v1.75.1-linux-amd64.zip \
             --output "$RUNNER_TEMP/rclone.zip"
@@ -50,7 +50,7 @@ jobs:
           unzip -p "$RUNNER_TEMP/rclone.zip" \
             rclone-v1.75.1-linux-amd64/rclone > "$RUNNER_TEMP/rclone"
           sudo install -m 0755 "$RUNNER_TEMP/rclone" /usr/local/bin/rclone
-          /usr/lib/postgresql/17/bin/pg_dump --version
+          /usr/lib/postgresql/18/bin/pg_dump --version
           rclone version | head -1
 
       - name: Preparar dependências e configuração privada
@@ -80,7 +80,7 @@ jobs:
           BACKUP_REMOTE: drive_salao:backups
           BACKUP_REQUIRE_OFFSITE: 'true'
           RCLONE_CONFIG: ${{ runner.temp }}/salao-backup/rclone.conf
-          POSTGRES_BIN: /usr/lib/postgresql/17/bin
+          POSTGRES_BIN: /usr/lib/postgresql/18/bin
         run: |
           set -euo pipefail
           node scripts/backup-job.mjs run
