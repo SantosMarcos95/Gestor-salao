@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   backup:
-    if: vars.BACKUP_ENABLED == 'true'
+    if: github.event_name == 'workflow_dispatch' || vars.BACKUP_ENABLED == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
@@ -40,7 +40,16 @@ jobs:
             'Signed-By: /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc' \
             | sudo tee /etc/apt/sources.list.d/pgdg.sources >/dev/null
           sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client-17 rclone
+          sudo apt-get install -y -qq postgresql-client-17 unzip
+          curl --fail --silent --show-error --location \
+            https://downloads.rclone.org/v1.75.1/rclone-v1.75.1-linux-amd64.zip \
+            --output "$RUNNER_TEMP/rclone.zip"
+          printf '%s  %s\n' \
+            '982b5aa772841168f8e380f139e9e787b2a105403e32b94da8676a0e1c0a13ab' \
+            "$RUNNER_TEMP/rclone.zip" | sha256sum --check --status
+          unzip -p "$RUNNER_TEMP/rclone.zip" \
+            rclone-v1.75.1-linux-amd64/rclone > "$RUNNER_TEMP/rclone"
+          sudo install -m 0755 "$RUNNER_TEMP/rclone" /usr/local/bin/rclone
           /usr/lib/postgresql/17/bin/pg_dump --version
           rclone version | head -1
 
