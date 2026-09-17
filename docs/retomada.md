@@ -1,10 +1,12 @@
 # Retomada — atualizada em 17/09/2026
 
-## Próxima prioridade pedida pelo usuário — WhatsApp da agenda
+## WhatsApp da agenda — adiado até obter número novo
 
 Usuário solicitou registrar no cronograma e começar a próxima implementação por lembrete ao cliente exatamente 24 horas antes do serviço (exemplo: 18/09/2026 às 16h → 17/09/2026 às 16h) e resumo da agenda do dia seguinte para cada funcionário diariamente às 10h, no horário de São Paulo. Objetivo é colocar ambos em funcionamento; nenhum envio foi implementado ou ativado nesta solicitação. Escopo e cuidados de operação em `docs/roadmap.md`.
 
 Decisão posterior: número novo exclusivo do sistema para envios automáticos via Cloud API direta da Meta; funcionários continuam atendendo pelo número WhatsApp Business atual do salão. Não configurar coexistência. Respostas de clientes ao número novo exigem orientação/encaminhamento ao contato humano. Número novo e conta Meta ainda não configurados.
+
+Usuário decidiu deixar a implementação de WhatsApp para depois porque ainda não tem o número novo. Próximas tarefas independentes: conferir a primeira execução automática do backup após o horário agendado; definir retenção e monitoramento/alertas; validar com a conta do salão os fluxos já publicados e fechar o aceite operacional. Nenhum envio de WhatsApp ativo.
 
 ## Estado atual — backup diário na nuvem ativo
 

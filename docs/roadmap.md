@@ -18,14 +18,14 @@ Fundação implementada e primeiros fluxos de autenticação/clientes/auditoria 
 
 ## Próximas fases
 
-### Próxima prioridade solicitada — avisos de agenda por WhatsApp
+### Avisos de agenda por WhatsApp — adiados até obter número novo
 
 O usuário quer iniciar a próxima etapa por esta função e colocá-la em operação:
 
 1. Enviar ao cliente um lembrete do serviço por WhatsApp **24 horas antes do início do agendamento**, no horário de São Paulo. Exemplo: serviço em 18/09/2026 às 16h → lembrete em 17/09/2026 às 16h. O texto deve identificar data, hora e serviço agendado.
 2. Enviar **todos os dias às 10h**, no horário de São Paulo, a cada funcionário um resumo da **própria agenda do dia seguinte** por WhatsApp.
 
-Decisão posterior: usar **um número novo exclusivo para os envios do sistema**, pela API oficial da Meta, sem uso desse número pelos funcionários. O número atual do salão permanece para atendimento humano. Não contratar coexistência para este caso. Como clientes podem responder ao número automático, definir resposta informativa com o contato de atendimento e tratamento de mensagens recebidas antes de ativar.
+Decisão posterior: usar **um número novo exclusivo para os envios do sistema**, pela API oficial da Meta, sem uso desse número pelos funcionários. O número atual do salão permanece para atendimento humano. Não contratar coexistência para este caso. Como clientes podem responder ao número automático, definir resposta informativa com o contato de atendimento e tratamento de mensagens recebidas antes de ativar. Usuário decidiu adiar esta etapa enquanto não possui o número novo; seguir com validação operacional e proteção do backup.
 
 Antes de ativar: configurar número novo e Cloud API da Meta e aprovar os modelos de mensagem, confirmar telefone e autorização de contato dos destinatários, definir tratamento de agendamentos criados/remarcados/cancelados dentro da janela de 24 horas, impedir envios duplicados e registrar entrega/falha com possibilidade de nova tentativa. Validar o conteúdo por salão e profissional para não revelar a agenda de outra pessoa. Esta função está **planejada, ainda não implementada nem ativa**.
 
