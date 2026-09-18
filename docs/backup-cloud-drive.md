@@ -27,7 +27,9 @@ GitHub Actions; a entrega de aviso por e-mail depende das preferências de
 notificação da conta GitHub. Como os dois workflows usam o agendador do GitHub,
 um serviço externo ainda seria necessário para detectar falha do próprio
 agendador. A primeira execução automática e a primeira verificação agendada
-ainda precisam ser observadas.
+ainda precisam ser observadas. Ensaios manuais: monitor `35288577700` passou;
+backup com retenção `35288612776` passou, removeu zero pares e preservou os dois
+pares cifrados no Drive.
 
 ## Ativação concluída em 17/09
 
