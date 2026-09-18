@@ -1,5 +1,9 @@
 # Retomada — atualizada em 17/09/2026
 
+## Ponto de parada — 17/09/2026 à noite
+
+Usuário pediu encerrar e salvar para continuar outro dia. Branch `main` publicada até `d048dae`; árvore Git limpa. Nenhum processo ou porta do projeto em execução na conferência final. Backup diário no GitHub Actions está ativo às 03h17 de São Paulo, com monitor às 11h17 e retenção de 90 dias/mínimo 7 pares completos. Ensaios manuais de backup, monitor e restauração isolada passaram; dois pares cifrados permanecem no Drive. **Primeiro passo na retomada:** verificar a primeira execução automática de ambos os workflows e a presença do novo par no Drive, sem repetir backup real desnecessariamente. Depois conferir notificações de falha do GitHub e avançar na validação autenticada dos fluxos do salão; monitor externo independente continua pendente. WhatsApp foi adiado até o usuário obter um número exclusivo para a automação. Não há migração pendente desta etapa, nem dados reais alterados pelos testes de restauração. Chave, OAuth e conexão Neon permanecem em arquivos privados ignorados pelo Git; não exibir seus valores.
+
 ## WhatsApp da agenda — adiado até obter número novo
 
 Usuário solicitou registrar no cronograma e começar a próxima implementação por lembrete ao cliente exatamente 24 horas antes do serviço (exemplo: 18/09/2026 às 16h → 17/09/2026 às 16h) e resumo da agenda do dia seguinte para cada funcionário diariamente às 10h, no horário de São Paulo. Objetivo é colocar ambos em funcionamento; nenhum envio foi implementado ou ativado nesta solicitação. Escopo e cuidados de operação em `docs/roadmap.md`.
