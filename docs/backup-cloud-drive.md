@@ -7,7 +7,7 @@ depender de o computador atual estar ligado. O workflow ativo em
 desativado. A variável `BACKUP_ENABLED=true` foi conferida no GitHub em 17/09;
 os três Secrets necessários foram cadastrados. Execução manual
 `35262437640` passou, com backup real e restauração isolada conferidos.
-Conferir a primeira execução automática após o próximo horário agendado.
+Execuções automáticas de 18 e 19/09 aprovadas; quatro pares completos confirmados no Drive em 19/09.
 
 O job instala cliente PostgreSQL 18, rclone 1.75.1 com SHA-256 conferido e
 dependências Node. Lê a conexão
@@ -73,3 +73,44 @@ cenário, o workflow na nuvem deixa de acessar o banco por padrão; antes da
 troca é preciso instalar a rotina no novo computador ou preparar um executor
 com acesso seguro ao novo banco. Os modelos locais em `ops/systemd/user/` e
 `ops/windows/` ficaram preparados, porém não instalados.
+
+## Monitor externo — integração local preparada em 19/09
+
+Conta e dois Secrets confirmados em 19/09; publicação e validação em andamento. Serviço: Healthchecks.io, com dois
+checks separados e notificações por e-mail. O plano gratuito consultado em
+19/09 permite 20 checks: https://healthchecks.io/pricing/.
+
+Criar os checks “Backup diário do salão” e “Verificação do Drive”. Em cada um,
+usar tipo Simple, Period de 1 dia e Grace Time de 12 horas. Assim, a ausência
+de confirmação por 36 horas gera alerta, tolerando os atrasos observados no
+GitHub. Vincular e confirmar a integração de e-mail em ambos. Falha explícita
+é informada ao fim do job sem aguardar as 36 horas. Este prazo é uma escolha
+operacional inicial, não garantia de execução ou recuperação.
+
+Salvar as URLs privadas de ping UUID como Actions Secrets do repositório:
+`BACKUP_HEALTHCHECKS_URL` para o backup e `BACKUP_DRIVE_HEALTHCHECKS_URL` para o
+monitor do Drive. Não colar essas URLs na conversa ou no repositório. Podem
+ser cadastradas diretamente no painel Settings → Secrets and variables →
+Actions → New repository secret. Aguardar a configuração para publicar e
+validar a integração. Sem secret, a etapa informa que não está configurada.
+
+A etapa final `always()` chama `scripts/notify-backup-monitor.sh`: envia sucesso
+somente após todas as etapas anteriores aprovadas, ou `/fail` para falha e
+cancelamento. Usa HTTPS, timeout, tentativas limitadas e exige resposta exata
+`OK`; HTTP 200 com check inexistente não é aceito. Não envia corpo, logs ou
+dados do banco. Sem checkout ou runner disponível, o sinal pode não sair;
+a ausência de confirmação será detectada pelo serviço externo. Os dois
+checks são independentes: verificar o Drive não renova o prazo do backup.
+
+Antes de declarar ativo: conferir os dois Secrets por nome, publicar os
+workflows, observar confirmações reais e validar recebimento de e-mail.
+Testar falha e ausência de sinal em um terceiro check temporário para evitar
+falso sucesso nos checks reais. Usar a função de teste de notificação do
+serviço e confirmar entrega, inclusive spam. Não disparar backup real apenas
+para testar uma notificação. Em paralelo, configurar na conta GitHub, em
+https://github.com/settings/notifications, e-mail de Actions e opção de avisar
+somente workflows com falha. A entrega depende das preferências da conta;
+não foi verificada nesta sessão.
+
+Referências: https://healthchecks.io/docs/http_api/ e
+https://docs.github.com/en/actions/concepts/workflows-and-actions/notifications-for-workflow-runs.

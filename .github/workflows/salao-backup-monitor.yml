@@ -45,3 +45,12 @@ jobs:
           mkdir -p "$RUNNER_TEMP/salao-backup"
           printf '%s' "$BACKUP_RCLONE_CONFIG" > "$RCLONE_CONFIG"
           node scripts/offsite-maintenance.mjs check
+
+      - name: Informar resultado ao monitor externo
+        if: ${{ always() }}
+        timeout-minutes: 2
+        shell: bash
+        env:
+          HEALTHCHECKS_PING_URL: ${{ secrets.BACKUP_DRIVE_HEALTHCHECKS_URL }}
+          WORKFLOW_RESULT: ${{ job.status }}
+        run: bash scripts/notify-backup-monitor.sh

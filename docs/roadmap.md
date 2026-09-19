@@ -2,6 +2,10 @@
 
 ## Status desta iteração
 
+Alertas em 19/09: integração local preparada para Healthchecks.io, dois checks independentes para backup e consulta do Drive. Testes simulados aprovados; conta, e-mail, Secrets, publicação e ensaio de entrega ainda pendentes. Monitor externo ainda não ativo.
+
+Atualização em 19/09: backup na nuvem ativo, com execuções automáticas de 18 e 19/09 aprovadas e quatro pares cifrados confirmados no Drive. Monitor automático de 18/09 aprovado; o de 19/09 ainda não apareceu na consulta às 13h43. Agendamentos tiveram atraso de horas. Pendentes notificações da conta GitHub, monitor externo independente e aceite autenticado dos fluxos publicados. Estes dados atualizam os registros históricos de preparação abaixo.
+
 Investigação da lentidão inicial em 16/09: medição sem sessão encontrou primeira chamada à API em 2,8 s e seguinte em 0,45 s; função em `iad1` e banco Neon em `sa-east-1`. Região da função publicada em `gru1`, conforme orientação oficial Vercel; resposta pública confirmou `gru1::gru1`. Amostra após deploy: primeira 1,22 s, segunda 0,23 s; outra sequência de seis chamadas teve primeira 0,997 s e as seguintes entre 47 e 110 ms. Amostras pequenas, sem sessão e sem período longo de inatividade; não isolam cold start da função versus retomada do banco.
 
 Cancelamento de agenda/comanda em 16/09: agendamento sem comanda é cancelado na agenda; com comanda, o cancelamento ocorre na comanda e sincroniza a agenda. Interface esclarecida; Atendente passa a ter permissão de cancelar comanda, com migration para perfis existentes aplicada no Neon e concessão agregada conferida. Motivo obrigatório em cancelamentos de agendamento, atendimento, comanda e venda. Build e suíte completa API/navegador aprovados em banco isolado. Código publicado, health e bundle público confirmados; validação autenticada com dados reais pendente.

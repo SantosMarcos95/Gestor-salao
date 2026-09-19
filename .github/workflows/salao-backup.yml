@@ -86,3 +86,12 @@ jobs:
           node scripts/backup-job.mjs run
           node scripts/backup-job.mjs check
           node scripts/offsite-maintenance.mjs prune
+
+      - name: Informar resultado ao monitor externo
+        if: ${{ always() }}
+        timeout-minutes: 2
+        shell: bash
+        env:
+          HEALTHCHECKS_PING_URL: ${{ secrets.BACKUP_HEALTHCHECKS_URL }}
+          WORKFLOW_RESULT: ${{ job.status }}
+        run: bash scripts/notify-backup-monitor.sh
