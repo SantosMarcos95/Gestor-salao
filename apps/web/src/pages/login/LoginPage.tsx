@@ -55,6 +55,11 @@ export function LoginPage({ onSuccess }: { onSuccess: () => Promise<unknown> }) 
               Senha alterada. Entre com a nova senha.
             </p>
           )}
+          {new URLSearchParams(window.location.search).get('email') === 'alterado' && (
+            <p className="success" role="status">
+              E-mail alterado. Entre com o novo e-mail e sua senha.
+            </p>
+          )}
           <form onSubmit={submit}>
             <label>
               E-mail

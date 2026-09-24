@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { KeyRound, Pencil, Plus } from 'lucide-react';
 import { api, type Page } from '../../lib/api';
 import type { Member, Role, Permission } from './types';
+import { ChangeEmailDialog } from './ChangeEmailDialog';
 import { ResetPasswordDialog } from './ResetPasswordDialog';
 import { UserDialog } from './UserDialog';
 import { RoleDialog } from './RoleDialog';
@@ -22,12 +23,15 @@ export function AccessPage({
   const [user, setUser] = useState<Member | 'new' | null>(null);
   const [role, setRole] = useState<Role | 'new' | null>(null);
   const [resetting, setResetting] = useState<Member | null>(null);
+  const [changingEmail, setChangingEmail] = useState<Member | null>(null);
   const [notice, setNotice] = useState('');
   const cache = useQueryClient();
   const users = useQuery({
     queryKey: ['access-users', search, page],
     queryFn: () =>
-      api<Page<Member>>(`/access/users?search=${encodeURIComponent(search)}&page=${page}`),
+      api<Page<Member> & { canChangeEmail: boolean }>(
+        `/access/users?search=${encodeURIComponent(search)}&page=${page}`,
+      ),
     enabled: canUsers,
   });
   const roles = useQuery({
@@ -42,6 +46,7 @@ export function AccessPage({
   });
   const ready = !!roles.data && !!catalog.data && !roles.isError && !catalog.isError;
   async function saved() {
+    setChangingEmail(null);
     setResetting(null);
     setUser(null);
     setRole(null);
@@ -170,6 +175,15 @@ export function AccessPage({
                             <Pencil size={18} />
                           </button>
                         )}
+                        {users.data.canChangeEmail && (
+                          <button
+                            className="button"
+                            aria-label={`Alterar e-mail de ${m.name}`}
+                            onClick={() => setChangingEmail(m)}
+                          >
+                            Alterar e-mail
+                          </button>
+                        )}
                         {canRoles && m.id !== membershipId && (
                           <button
                             className="icon-button"
@@ -235,6 +249,14 @@ export function AccessPage({
             ))
           )}
         </section>
+      )}
+      {changingEmail && (
+        <ChangeEmailDialog
+          member={changingEmail}
+          self={changingEmail.id === membershipId}
+          close={() => setChangingEmail(null)}
+          saved={saved}
+        />
       )}
       {resetting && (
         <ResetPasswordDialog member={resetting} close={() => setResetting(null)} saved={saved} />

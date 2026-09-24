@@ -76,7 +76,7 @@ com acesso seguro ao novo banco. Os modelos locais em `ops/systemd/user/` e
 
 ## Monitor externo — integração local preparada em 19/09
 
-Conta e dois Secrets confirmados em 19/09; publicação e validação em andamento. Serviço: Healthchecks.io, com dois
+Conta e dois Secrets confirmados em 19/09. Publicação e recebimento dos dois sinais pelo Healthchecks confirmados em 24/09 pelos logs dos jobs. Entrega de e-mail e configuração efetiva de período/tolerância ainda pendentes. Serviço: Healthchecks.io, com dois
 checks separados e notificações por e-mail. O plano gratuito consultado em
 19/09 permite 20 checks: https://healthchecks.io/pricing/.
 

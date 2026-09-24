@@ -18,6 +18,7 @@ const actionNames: Record<string, string> = {
   SENHA_ALTERADA: 'Senha alterada pelo titular',
   SENHA_REDEFINIDA: 'Senha redefinida pelo administrador',
   USUARIO_CRIADO: 'Usuário cadastrado',
+  EMAIL_LOGIN_ALTERADO: 'E-mail de login alterado',
   USUARIO_ALTERADO: 'Acesso do usuário alterado',
   PERFIL_CRIADO: 'Perfil criado',
   PERFIL_ALTERADO: 'Perfil alterado',

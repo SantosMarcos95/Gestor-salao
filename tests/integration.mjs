@@ -20,6 +20,7 @@ import { testAppointments, testAppointmentsBrowser } from './appointments.mjs';
 import { testFinance, testFinanceBrowser } from './finance.mjs';
 import { testOrders, testOrdersBrowser } from './orders.mjs';
 import { testInventory, testInventoryBrowser } from './inventory.mjs';
+import { testLoginEmail } from './login-email.mjs';
 import { testPasswords } from './passwords.mjs';
 import { testAvailability, testAvailabilityBrowser } from './availability.mjs';
 import { testCatalog, testCatalogBrowser } from './catalog.mjs';
@@ -409,6 +410,27 @@ try {
       path: join(root, '.local/screenshots/users-desktop.png'),
       fullPage: true,
     });
+    for (const email of ['BROWSER-RENAMED@example.test', 'browser-team@example.test']) {
+      await page
+        .getByRole('button', { name: 'Alterar e-mail de Equipe do navegador', exact: true })
+        .click();
+      await page.getByLabel('Novo e-mail de login', { exact: true }).fill(email);
+      await page
+        .getByLabel('Confirmar novo e-mail', { exact: true })
+        .fill('different@example.test');
+      await page.getByLabel('Sua senha atual', { exact: true }).fill(env.ADMIN_PASSWORD);
+      await page
+        .getByLabel('Motivo da alteração', { exact: true })
+        .fill('Correção de e-mail pela interface');
+      await page.getByRole('button', { name: 'Salvar e-mail', exact: true }).click();
+      await expect(page.getByRole('alert')).toContainText('A confirmação deve ser igual');
+      await page.getByLabel('Confirmar novo e-mail', { exact: true }).fill(email);
+      await page.getByRole('button', { name: 'Salvar e-mail', exact: true }).click();
+      await page.getByRole('dialog').waitFor({ state: 'hidden' });
+      await expect(page.getByRole('row').filter({ hasText: email.toLowerCase() })).toContainText(
+        'Inativo',
+      );
+    }
     await page.getByRole('button', { name: 'Perfis de acesso', exact: true }).click();
     await page.getByRole('button', { name: 'Novo perfil', exact: true }).click();
     await page.getByLabel('Nome do perfil').fill('Consulta do navegador');
@@ -1027,6 +1049,15 @@ try {
       recoveryBaseline.push(response.data);
     }
   }
+  await testLoginEmail({
+    prisma,
+    root,
+    env,
+    cookie,
+    member,
+    otherMember,
+    delegatedCookie: delegatedLogin.cookie,
+  });
   assert.equal((await request('/auth/logout', { method: 'POST', cookie })).status, 201);
   assert.equal((await request('/auth/me', { cookie })).status, 401);
   check('Logout revoga sessão no servidor');

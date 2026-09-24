@@ -133,6 +133,7 @@ export class AuthService {
       if (
         !current ||
         current.passwordHash !== user.passwordHash ||
+        current.email !== email ||
         current.status !== 'ACTIVE' ||
         !currentMember?.active
       ) {

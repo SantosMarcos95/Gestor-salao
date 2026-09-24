@@ -2,6 +2,14 @@
 
 ## Status desta iteração
 
+E-mail de login em 24/09: alteração administrativa implementada e validada localmente (typecheck, build e suíte completa API/navegador isolada). Botão em Usuários e permissões, confirmação de senha do administrador, motivo, auditoria e sessões revogadas; preserva a senha do usuário. Sem migration ou dado real alterado. Publicação ainda pendente. Manual atualizado.
+
+Manual para a equipe preparado em 24/09: `docs/manual-do-usuario.md` e versão HTML independente para consulta/impressão. Conteúdo conferido com as telas; não substitui o aceite autenticado ainda pendente. Arquivos locais, sem publicação no site.
+
+Confirmação adicional em 24/09: logs dos dois jobs confirmam recebimento real dos sinais pelo Healthchecks. Smoke público aprovado (página/health 200, sessão 401 sem login). Entrega de e-mail e aceite autenticado permanecem pendentes; roteiro em `docs/aceite-operacional.md`.
+
+Atualização em 24/09: integração Healthchecks publicada no commit `9376c3b`. Backups de 20 a 24/09 e monitores de 20 a 23/09 aprovados no GitHub; etapas de aviso externo aprovadas nos dois últimos jobs. Logs filtrados não retornaram texto, portanto recebimento no painel e entrega de e-mail ainda precisam de confirmação. Próximos passos: validar os dois checks e a notificação, depois aceite autenticado dos fluxos do salão.
+
 Alertas em 19/09: integração local preparada para Healthchecks.io, dois checks independentes para backup e consulta do Drive. Testes simulados aprovados; conta, e-mail, Secrets, publicação e ensaio de entrega ainda pendentes. Monitor externo ainda não ativo.
 
 Atualização em 19/09: backup na nuvem ativo, com execuções automáticas de 18 e 19/09 aprovadas e quatro pares cifrados confirmados no Drive. Monitor automático de 18/09 aprovado; o de 19/09 ainda não apareceu na consulta às 13h43. Agendamentos tiveram atraso de horas. Pendentes notificações da conta GitHub, monitor externo independente e aceite autenticado dos fluxos publicados. Estes dados atualizam os registros históricos de preparação abaixo.

@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manual do usuário — Ateliê</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+        color: #24352f;
+        background: #f3f5f1;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 940px;
+        margin: 32px auto;
+        padding: 48px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px #2038300c;
+      }
+      h1,
+      h2,
+      h3 {
+        line-height: 1.25;
+        color: #214c3c;
+      }
+      h1 {
+        font-size: 2.4rem;
+      }
+      h2 {
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dce4dd;
+        scroll-margin-top: 20px;
+      }
+      h3 {
+        margin-top: 1.8rem;
+      }
+      a {
+        color: #21664e;
+        text-underline-offset: 3px;
+      }
+      li {
+        margin: 0.4rem 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.94rem;
+        margin: 1.4rem 0;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 12px;
+        border: 1px solid #dce4dd;
+      }
+      th {
+        background: #edf3ee;
+      }
+      tr:nth-child(even) {
+        background: #fafbf9;
+      }
+      .tools {
+        max-width: 940px;
+        margin: 24px auto 0;
+        padding: 0 24px;
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      button {
+        border: 0;
+        border-radius: 8px;
+        background: #214c3c;
+        color: white;
+        padding: 12px 18px;
+        font: inherit;
+        cursor: pointer;
+      }
+      button:focus-visible,
+      a:focus-visible {
+        outline: 3px solid #bc823a;
+        outline-offset: 4px;
+      }
+      .tools span {
+        font-size: 0.9rem;
+      }
+      footer {
+        margin-top: 3rem;
+        font-size: 0.9rem;
+        color: #586a60;
+      }
+      @media (max-width: 700px) {
+        main {
+          margin: 16px 0;
+          padding: 22px;
+          border-radius: 0;
+        }
+        h1 {
+          font-size: 1.9rem;
+        }
+        table {
+          font-size: 0.85rem;
+        }
+        th,
+        td {
+          padding: 7px;
+          overflow-wrap: anywhere;
+        }
+        ol,
+        ul {
+          padding-left: 23px;
+        }
+      }
+      @media print {
+        @page {
+          size: A4;
+          margin: 16mm;
+        }
+        body {
+          background: white;
+          font-size: 10pt;
+          line-height: 1.5;
+        }
+        main {
+          max-width: none;
+          margin: 0;
+          padding: 0;
+          box-shadow: none;
+        }
+        .tools {
+          display: none;
+        }
+        h1 {
+          font-size: 24pt;
+        }
+        h2 {
+          font-size: 17pt;
+          margin-top: 22pt;
+        }
+        h3 {
+          font-size: 12pt;
+        }
+        h1,
+        h2,
+        h3 {
+          break-after: avoid;
+        }
+        tr {
+          break-inside: avoid;
+        }
+        thead {
+          display: table-header-group;
+        }
+        table {
+          font-size: 9pt;
+        }
+        a {
+          color: inherit;
+        }
+        footer {
+          font-size: 9pt;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tools">
+      <button type="button" onclick="window.print()">Imprimir / salvar em PDF</button
+      ><span>Na janela de impressão, escolha “Salvar como PDF” para compartilhar.</span>
+    </div>
+    <main>
+      <h1 id="manual-do-usuário--ateliê">Manual do usuário — Ateliê</h1>
+      <p>Guia de uso do sistema de gestão do salão · Versão de 24/09/2026</p>
+      <p>
+        <strong>Acesse o sistema:</strong>
+        <a href="https://gestor-salao-api.vercel.app">gestor-salao-api.vercel.app</a>
+      </p>
+      <p>
+        Este manual é destinado à recepção, aos profissionais e à administração. Os menus e botões
+        disponíveis dependem das permissões da sua conta. Se uma opção não aparecer, consulte o
+        administrador do salão.
+      </p>
+      <h2 id="índice">Índice</h2>
+      <ol>
+        <li><a href="#1-entrar-e-cuidar-da-sua-conta">Entrar e cuidar da sua conta</a></li>
+        <li><a href="#2-conhecer-os-menus">Conhecer os menus</a></li>
+        <li><a href="#3-rotina-r%C3%A1pida-do-sal%C3%A3o">Rotina rápida do salão</a></li>
+        <li><a href="#4-cadastrar-e-localizar-clientes">Cadastrar e localizar clientes</a></li>
+        <li><a href="#5-usar-a-agenda">Usar a agenda</a></li>
+        <li>
+          <a href="#6-abrir-comandas-e-registrar-atendimentos"
+            >Abrir comandas e registrar atendimentos</a
+          >
+        </li>
+        <li><a href="#7-vender-produtos">Vender produtos</a></li>
+        <li><a href="#8-receber-pagamentos">Receber pagamentos</a></li>
+        <li><a href="#9-cancelar-ou-estornar">Cancelar ou estornar</a></li>
+        <li><a href="#10-abrir-e-fechar-o-caixa">Abrir e fechar o caixa</a></li>
+        <li>
+          <a href="#11-consultar-financeiro-e-comiss%C3%B5es">Consultar financeiro e comissões</a>
+        </li>
+        <li><a href="#12-controlar-produtos-e-estoque">Controlar produtos e estoque</a></li>
+        <li>
+          <a href="#13-consultar-relat%C3%B3rios-e-exportar-planilhas"
+            >Consultar relatórios e exportar planilhas</a
+          >
+        </li>
+        <li>
+          <a href="#14-preparar-o-sistema--administra%C3%A7%C3%A3o"
+            >Preparar o sistema — administração</a
+          >
+        </li>
+        <li>
+          <a href="#15-resolver-d%C3%BAvidas-e-dificuldades">Resolver dúvidas e dificuldades</a>
+        </li>
+      </ol>
+      <h2 id="1-entrar-e-cuidar-da-sua-conta">1. Entrar e cuidar da sua conta</h2>
+      <h3 id="entrar-no-sistema">Entrar no sistema</h3>
+      <ol>
+        <li>Abra o link do sistema no navegador do computador, tablet ou celular.</li>
+        <li>Informe o e-mail e a senha fornecidos pelo administrador.</li>
+        <li>Clique em <strong>Entrar no salão</strong>.</li>
+        <li>Se o sistema solicitar uma nova senha, conclua a troca para continuar.</li>
+      </ol>
+      <p>
+        No celular, toque no botão de menu no alto da tela para abrir a navegação. Ao terminar o uso
+        em um aparelho compartilhado, use <strong>Sair</strong>, junto ao seu nome no menu.
+      </p>
+      <h3 id="trocar-a-senha">Trocar a senha</h3>
+      <ol>
+        <li>Abra <strong>Minha conta</strong>.</li>
+        <li>Informe a senha atual, a nova senha e a confirmação.</li>
+        <li>Use uma senha de 8 a 128 caracteres, diferente da atual.</li>
+        <li>Clique em <strong>Salvar nova senha</strong>.</li>
+        <li>
+          Entre novamente com a nova senha. A troca encerra suas sessões nos outros aparelhos
+          também.
+        </li>
+      </ol>
+      <p>
+        Se esqueceu a senha, peça ao administrador uma redefinição. Ele fornecerá uma senha
+        provisória que deverá ser trocada ao entrar. A recuperação por e-mail ainda não está
+        disponível.
+      </p>
+      <h2 id="2-conhecer-os-menus">2. Conhecer os menus</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Menu</th>
+            <th>Para que serve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Visão geral</td>
+            <td>
+              Consultar um resumo da agenda, das pendências e dos indicadores permitidos para sua
+              conta.
+            </td>
+          </tr>
+          <tr>
+            <td>Agenda</td>
+            <td>Marcar horários, consultar reservas e acompanhar a situação dos agendamentos.</td>
+          </tr>
+          <tr>
+            <td>Clientes</td>
+            <td>Cadastrar, buscar e editar clientes; acessar suas comandas.</td>
+          </tr>
+          <tr>
+            <td>Comandas</td>
+            <td>Reunir serviços e produtos do cliente, aplicar desconto e receber.</td>
+          </tr>
+          <tr>
+            <td>Atendimentos</td>
+            <td>Acompanhar os serviços, iniciar, registrar consumo e concluir.</td>
+          </tr>
+          <tr>
+            <td>Caixa</td>
+            <td>Registrar o dinheiro inicial, as retiradas e o fechamento.</td>
+          </tr>
+          <tr>
+            <td>Financeiro</td>
+            <td>Consultar vendas, recebimentos e estornos do salão.</td>
+          </tr>
+          <tr>
+            <td>Meu financeiro / comissões</td>
+            <td>Consultar as comissões conforme o acesso do usuário.</td>
+          </tr>
+          <tr>
+            <td>Produtos e estoque</td>
+            <td>Cadastrar produtos, consultar saldo e registrar movimentações.</td>
+          </tr>
+          <tr>
+            <td>Fornecedores</td>
+            <td>Manter os contatos dos fornecedores.</td>
+          </tr>
+          <tr>
+            <td>Relatórios</td>
+            <td>Analisar serviços, ocupação, estoque e recebimentos.</td>
+          </tr>
+          <tr>
+            <td>Profissionais</td>
+            <td>Cadastrar a equipe e configurar vínculos e comissões.</td>
+          </tr>
+          <tr>
+            <td>Serviços</td>
+            <td>Manter os serviços oferecidos, preços e duração.</td>
+          </tr>
+          <tr>
+            <td>Disponibilidade</td>
+            <td>Definir jornadas, bloqueios e serviços de cada profissional.</td>
+          </tr>
+          <tr>
+            <td>Usuários e permissões</td>
+            <td>Administrar quem entra no sistema e o que pode fazer.</td>
+          </tr>
+          <tr>
+            <td>Auditoria</td>
+            <td>Consultar quem realizou alterações e seus motivos.</td>
+          </tr>
+          <tr>
+            <td>Minha conta</td>
+            <td>Trocar sua senha.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        <strong>Três conceitos para o dia a dia:</strong> o agendamento reserva o horário; o
+        atendimento registra a execução do serviço; a comanda reúne o que o cliente vai pagar.
+        Marcar um serviço como concluído não registra o pagamento.
+      </p>
+      <h2 id="3-rotina-rápida-do-salão">3. Rotina rápida do salão</h2>
+      <h3 id="no-início-do-dia">No início do dia</h3>
+      <ol>
+        <li>Entre com sua conta e confira a <strong>Agenda</strong> do dia.</li>
+        <li>Verifique os profissionais, horários e eventuais bloqueios.</li>
+        <li>
+          Se for responsável pelo dinheiro, confira o <strong>Caixa</strong> e registre a abertura
+          quando necessário.
+        </li>
+      </ol>
+      <h3 id="quando-o-cliente-chegar">Quando o cliente chegar</h3>
+      <ol>
+        <li>Localize o agendamento e abra seus detalhes.</li>
+        <li>
+          Use <strong>Abrir comanda</strong>. Se ela já existir, use <strong>Ver comanda</strong>.
+        </li>
+        <li>Confira cliente, profissional e serviços.</li>
+        <li>
+          Use <strong>Iniciar atendimento</strong>, registre os produtos utilizados e depois
+          <strong>Concluir atendimento</strong>.
+        </li>
+        <li>Acrescente os produtos que o cliente comprou, se houver.</li>
+        <li>Confira o desconto e o total; finalize os itens e registre o pagamento.</li>
+        <li>Verifique se a comanda ficou <strong>Quitada</strong>.</li>
+      </ol>
+      <p>
+        Para um cliente sem horário marcado, abra a comanda diretamente em
+        <strong>Comandas</strong>.
+      </p>
+      <h3 id="no-fim-do-dia">No fim do dia</h3>
+      <ol>
+        <li>Confira as comandas ainda abertas ou com saldo pendente.</li>
+        <li>Compare os recebimentos com os comprovantes e o dinheiro recebido.</li>
+        <li>Faça a contagem e o fechamento do caixa, se for sua responsabilidade.</li>
+        <li>Saia da sua conta.</li>
+      </ol>
+      <h2 id="4-cadastrar-e-localizar-clientes">4. Cadastrar e localizar clientes</h2>
+      <h3 id="cadastrar">Cadastrar</h3>
+      <ol>
+        <li>Abra <strong>Clientes</strong> e pesquise primeiro para evitar cadastro duplicado.</li>
+        <li>Se não encontrar a pessoa, clique em <strong>Novo cliente</strong>.</li>
+        <li>Preencha <strong>Nome completo</strong>, que é obrigatório.</li>
+        <li>Complete telefone, WhatsApp, e-mail, nascimento e observações quando necessário.</li>
+        <li>Clique em <strong>Salvar cliente</strong> e confira o registro na lista.</li>
+      </ol>
+      <p>
+        Use as observações para informações úteis ao atendimento. O preenchimento de WhatsApp serve
+        ao cadastro; os lembretes automáticos ainda não estão ativos.
+      </p>
+      <h3 id="consultar-editar-e-arquivar">Consultar, editar e arquivar</h3>
+      <p>
+        Use <strong>Buscar cliente…</strong> e a paginação da lista. A ação de edição permite
+        corrigir o cadastro. O botão <strong>Comandas</strong> leva às comandas daquele cliente que
+        sua conta pode consultar.
+      </p>
+      <p>
+        Para retirar um cadastro do uso ativo, use a ação de arquivamento, leia a confirmação e
+        informe o motivo solicitado. Arquivar preserva o histórico; não é uma forma de apagar vendas
+        ou pagamentos.
+      </p>
+      <h2 id="5-usar-a-agenda">5. Usar a agenda</h2>
+      <h3 id="consultar-o-dia-ou-a-semana">Consultar o dia ou a semana</h3>
+      <p>
+        Abra <strong>Agenda</strong>, escolha a data e a visualização diária ou semanal. Use o
+        filtro de profissional e a paginação da equipe quando necessário. Confira o fuso indicado na
+        tela; a operação do salão utiliza o horário de São Paulo.
+      </p>
+      <h3 id="criar-um-agendamento">Criar um agendamento</h3>
+      <ol>
+        <li>Clique em <strong>Novo agendamento</strong>.</li>
+        <li>Selecione o profissional e o cliente.</li>
+        <li>
+          Confira a <strong>Unidade</strong> e informe o <strong>Início do agendamento</strong>.
+        </li>
+        <li>
+          Abra <strong>Adicionar serviços</strong> e selecione os serviços na ordem de execução.
+        </li>
+        <li>Confira a duração total e o valor previsto.</li>
+        <li>Preencha observações, se necessário.</li>
+        <li>Clique em <strong>Salvar agendamento</strong> e confira o horário na agenda.</li>
+      </ol>
+      <p>
+        Os serviços oferecidos na seleção são os ativos vinculados ao profissional. O sistema
+        verifica jornada, bloqueios e conflitos de horário. Se trocar o profissional durante o
+        preenchimento, selecione novamente os serviços.
+      </p>
+      <h3 id="remarcar">Remarcar</h3>
+      <p>
+        Abra os detalhes do agendamento e use <strong>Remarcar ou editar</strong>, quando
+        disponível. Altere os dados necessários, confira os serviços e salve. Ao remarcar, os
+        valores existentes são preservados, salvo edição autorizada; mudar o preço do catálogo não
+        atualiza automaticamente uma reserva antiga.
+      </p>
+      <h3 id="entender-os-status">Entender os status</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Significado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Agendado</td>
+            <td>Horário reservado.</td>
+          </tr>
+          <tr>
+            <td>Confirmado</td>
+            <td>Reserva confirmada.</td>
+          </tr>
+          <tr>
+            <td>Chegou</td>
+            <td>Chegada registrada.</td>
+          </tr>
+          <tr>
+            <td>Concluído</td>
+            <td>Serviço concluído na agenda; confira o pagamento na comanda.</td>
+          </tr>
+          <tr>
+            <td>Não compareceu</td>
+            <td>Cliente não compareceu.</td>
+          </tr>
+          <tr>
+            <td>Cancelado</td>
+            <td>Agendamento cancelado, com histórico preservado.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Sem atendimento vinculado, use <strong>Novo status</strong> nos detalhes e confirme a
+        alteração disponível. Com comanda vinculada, registre início e conclusão pelo atendimento na
+        comanda. Nem toda mudança de status pode ser desfeita; confira antes de confirmar.
+      </p>
+      <h3 id="cancelar-um-horário">Cancelar um horário</h3>
+      <p>
+        <strong>Sem comanda:</strong> abra o agendamento, escolha <strong>Cancelado</strong>,
+        preencha o motivo e confirme.
+      </p>
+      <p>
+        <strong>Com comanda:</strong> use <strong>Ver comanda</strong> e faça o cancelamento pela
+        comanda. A agenda é atualizada pelo vínculo. Consulte a seção de cancelamentos antes de agir
+        se já houve pagamento.
+      </p>
+      <h2 id="6-abrir-comandas-e-registrar-atendimentos">
+        6. Abrir comandas e registrar atendimentos
+      </h2>
+      <h3 id="a-partir-da-agenda">A partir da agenda</h3>
+      <ol>
+        <li>Abra os detalhes do agendamento.</li>
+        <li>Clique em <strong>Abrir comanda</strong>.</li>
+        <li>Confira a comanda criada com os serviços do agendamento.</li>
+      </ol>
+      <p>
+        Se aparecer <strong>Ver comanda</strong>, abra a existente para continuar o atendimento.
+      </p>
+      <h3 id="sem-agendamento">Sem agendamento</h3>
+      <ol>
+        <li>Entre em <strong>Comandas</strong> e clique em <strong>Abrir comanda</strong>.</li>
+        <li>Selecione o cliente e confirme a abertura.</li>
+        <li>Use <strong>Adicionar atendimento</strong> para selecionar profissional e serviços.</li>
+        <li>
+          Para outro profissional atender o mesmo cliente, adicione outro atendimento na mesma
+          comanda.
+        </li>
+      </ol>
+      <p>
+        Em uma comanda aberta, <strong>Trazer da agenda</strong> permite importar um agendamento
+        elegível do cliente. Confira os serviços existentes antes de acrescentar novos itens.
+      </p>
+      <h3 id="executar-o-serviço">Executar o serviço</h3>
+      <ol>
+        <li>No atendimento correto, clique em <strong>Iniciar atendimento</strong> e confirme.</li>
+        <li>
+          Durante o serviço, use <strong>Registrar consumo</strong> para cada produto utilizado.
+        </li>
+        <li>
+          Selecione o produto, informe a quantidade na unidade indicada e confirme que ele foi
+          utilizado.
+        </li>
+        <li>Ao terminar, confira os serviços, valores e consumos.</li>
+        <li>Clique em <strong>Concluir atendimento</strong> e confirme.</li>
+      </ol>
+      <p>
+        Exemplo: se foram usados 30 ml de um produto, informe <strong>30</strong> quando a medida
+        for <strong>ml</strong>. Não informe “1 frasco” nesse campo.
+      </p>
+      <p>
+        O consumo confirmado baixa o estoque naquele momento. Concluir o atendimento preserva seus
+        valores e consumos. Cancelar posteriormente não devolve ao estoque o produto que já foi
+        utilizado.
+      </p>
+      <h3 id="ajustar-valores-e-desconto">Ajustar valores e desconto</h3>
+      <p>
+        Quando sua conta permitir, use <strong>Editar valores</strong> no atendimento antes da
+        conclusão. Isso altera os valores daquele atendimento, mantendo o catálogo.
+      </p>
+      <p>
+        Use <strong>Aplicar desconto</strong> para informar um desconto em reais sobre a comanda.
+        Confira o subtotal, o desconto e o total antes de finalizar.
+      </p>
+      <h3 id="entender-a-situação-da-comanda">Entender a situação da comanda</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Situação</th>
+            <th>O que fazer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Aberta</td>
+            <td>Continuar os atendimentos e conferir itens e desconto.</td>
+          </tr>
+          <tr>
+            <td>Serviços finalizados</td>
+            <td>Registrar o recebimento; os itens já foram finalizados.</td>
+          </tr>
+          <tr>
+            <td>Quitada</td>
+            <td>Pagamento concluído, sem saldo pendente.</td>
+          </tr>
+          <tr>
+            <td>Saldo pendente</td>
+            <td>Conferir o histórico, inclusive estornos, e receber o saldo quando devido.</td>
+          </tr>
+          <tr>
+            <td>Cancelada</td>
+            <td>Consultar o histórico; não prosseguir como uma comanda aberta.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2 id="7-vender-produtos">7. Vender produtos</h2>
+      <ol>
+        <li>Abra a comanda do cliente.</li>
+        <li>Clique em <strong>Adicionar produto</strong>.</li>
+        <li>Selecione o produto e informe quantas unidades inteiras serão vendidas.</li>
+        <li>Confira o preço, a quantidade física de cada unidade e o total.</li>
+        <li>
+          Confirme a inclusão. Antes de finalizar, remova um item incluído por engano pela ação
+          disponível no produto.
+        </li>
+        <li>Registre o pagamento da comanda.</li>
+      </ol>
+      <p>É possível ter serviços e produtos na mesma comanda ou vender somente produtos.</p>
+      <p>
+        <strong>Exemplo:</strong> frasco de 500 ml a R$ 30. Vender 2 unidades soma R$ 60 e baixa
+        1.000 ml do estoque no primeiro pagamento. No cadastro, cada unidade vendida deve estar
+        configurada como 500 ml.
+      </p>
+      <p>
+        A inclusão na comanda não reserva nem baixa estoque. A baixa acontece na primeira
+        confirmação de pagamento. Se faltar saldo, o recebimento inteiro será recusado; confira a
+        disponibilidade física e o cadastro antes de tentar novamente.
+      </p>
+      <p>
+        Produtos sem preço de venda não aparecem para venda. O consumo de material usado no serviço
+        deve ser registrado em <strong>Registrar consumo</strong>, e o produto levado pelo cliente
+        em <strong>Adicionar produto</strong>.
+      </p>
+      <h2 id="8-receber-pagamentos">8. Receber pagamentos</h2>
+      <ol>
+        <li>
+          Confira se os atendimentos foram concluídos e se os produtos e o desconto estão corretos.
+        </li>
+        <li>
+          Use <strong>Finalizar e receber</strong>, quando disponível. Outra opção é
+          <strong>Finalizar itens</strong> e, depois, <strong>Receber pagamento</strong> na seção
+          <strong>Pagamentos</strong>.
+        </li>
+        <li>Escolha a forma: dinheiro, PIX, cartão de crédito, cartão de débito ou outro.</li>
+        <li>Informe o valor aplicado em cada forma.</li>
+        <li>Para dividir, clique em <strong>Adicionar forma de pagamento</strong>.</li>
+        <li>Em dinheiro, confira o valor entregue e o troco.</li>
+        <li>
+          Confira o recebimento de fato, marque a confirmação e clique em
+          <strong>Confirmar recebimento</strong>.
+        </li>
+        <li>Verifique a situação <strong>Quitada</strong> e os pagamentos registrados.</li>
+      </ol>
+      <p>
+        A soma das formas deve ser igual ao saldo da comanda. Exemplo: total de R$ 120 pode ser
+        recebido como R$ 50 em dinheiro e R$ 70 em PIX. Se o cliente entregar R$ 100 para a parte de
+        R$ 50 em dinheiro, o troco será R$ 50; apenas R$ 50 entram como recebimento dessa forma.
+      </p>
+      <p>
+        O registro é manual. Selecionar PIX ou cartão não realiza uma cobrança, não gera pagamento
+        bancário e não confirma automaticamente um comprovante. Confira o recebimento no meio
+        utilizado pelo salão antes de registrar.
+      </p>
+      <p>
+        O sistema não oferece parcelamento futuro ou pagamento inicial parcial nesta rotina. O saldo
+        deve ser quitado integralmente, mesmo quando dividido entre formas.
+      </p>
+      <h2 id="9-cancelar-ou-estornar">9. Cancelar ou estornar</h2>
+      <p>
+        Escolha a ação conforme o que realmente ocorreu. Informe um motivo claro nos cancelamentos e
+        estornos.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Situação</th>
+            <th>Caminho</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reserva sem comanda</td>
+            <td>Cancelar nos detalhes da Agenda.</td>
+          </tr>
+          <tr>
+            <td>Comanda ainda sem pagamento</td>
+            <td>Abrir a comanda e usar <strong>Cancelar comanda</strong>.</td>
+          </tr>
+          <tr>
+            <td>Apenas um atendimento precisa ser cancelado</td>
+            <td>
+              Usar <strong>Cancelar atendimento</strong> no atendimento correto, enquanto
+              disponível.
+            </td>
+          </tr>
+          <tr>
+            <td>Devolver parte ou todo um recebimento</td>
+            <td>Na seção Pagamentos, usar <strong>Estornar</strong> junto à forma de pagamento.</td>
+          </tr>
+          <tr>
+            <td>Cancelar toda a venda já registrada</td>
+            <td>Usar <strong>Cancelar venda e estornar</strong>, com a permissão necessária.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        No estorno de um recebimento, confira o valor a devolver e confirme a operação. O estorno
+        pode gerar saldo pendente na comanda; se houver um novo recebimento devido, ele deve ser
+        registrado pela rotina de pagamento.
+      </p>
+      <p>
+        Os registros financeiros não executam a devolução no banco ou na máquina de cartão. A
+        devolução efetiva deve ser realizada pelo meio correspondente e conferida pelo responsável.
+      </p>
+      <p>
+        <strong>Estoque após cancelamento:</strong> produtos consumidos em serviços não voltam
+        automaticamente. Produtos vendidos também não retornam ao estoque por estorno ou
+        cancelamento da venda. Se houver devolução física, confira a mercadoria e peça ao
+        responsável para registrar a movimentação adequada com motivo. Uma comanda cancelada antes
+        de pagar não chegou a baixar seus produtos de venda.
+      </p>
+      <h2 id="10-abrir-e-fechar-o-caixa">10. Abrir e fechar o caixa</h2>
+      <p>
+        O caixa acompanha o dinheiro físico do salão. PIX e cartões ficam no financeiro e não
+        aumentam o saldo da gaveta. Há um único caixa aberto por salão.
+      </p>
+      <h3 id="abrir">Abrir</h3>
+      <ol>
+        <li>Abra <strong>Caixa</strong> e confira se já existe um turno aberto.</li>
+        <li>Se estiver fechado, clique em <strong>Abrir caixa</strong>.</li>
+        <li>Informe o <strong>Saldo inicial em dinheiro</strong> que está realmente na gaveta.</li>
+        <li>Confira, marque a confirmação e clique em <strong>Confirmar</strong>.</li>
+      </ol>
+      <p>
+        A primeira abertura ativa o controle: a partir dela, recebimentos e estornos em dinheiro
+        exigem caixa aberto. Movimentos anteriores não são importados.
+      </p>
+      <h3 id="retirar-dinheiro--sangria">Retirar dinheiro — sangria</h3>
+      <ol>
+        <li>Clique em <strong>Registrar sangria</strong>.</li>
+        <li>Informe o <strong>Valor retirado</strong> e o motivo.</li>
+        <li>Confira a retirada física e confirme.</li>
+      </ol>
+      <p>
+        A sangria não pode ultrapassar o saldo disponível. Ela registra uma retirada; não equivale
+        ao cadastro de uma despesa.
+      </p>
+      <h3 id="fechar">Fechar</h3>
+      <ol>
+        <li>Termine de conferir os recebimentos e conte o dinheiro físico.</li>
+        <li>Clique em <strong>Fechar caixa</strong>.</li>
+        <li>
+          Compare o saldo esperado com o <strong>Dinheiro contado</strong> e informe o contado.
+        </li>
+        <li>Havendo diferença, registre o motivo.</li>
+        <li>Confirme e consulte <strong>Ver movimentos</strong> no histórico.</li>
+      </ol>
+      <p>
+        Exemplo: R$ 100 iniciais + R$ 200 recebidos em dinheiro − R$ 50 de sangria = R$ 250
+        esperados, se não houver estornos. Um PIX de R$ 80 não muda essa contagem.
+      </p>
+      <p>
+        Se o saldo mudar enquanto você confere, atualize e reconte antes de fechar. O turno fechado
+        fica preservado, sem edição ou reabertura. Um estorno em dinheiro de uma venda antiga
+        movimenta o caixa aberto no momento da devolução.
+      </p>
+      <h2 id="11-consultar-financeiro-e-comissões">11. Consultar financeiro e comissões</h2>
+      <h3 id="financeiro-do-salão">Financeiro do salão</h3>
+      <p>
+        Entre em <strong>Financeiro</strong>, escolha o período e confira vendas, cancelamentos,
+        recebimentos e estornos. Consulte as formas de pagamento e as comandas relacionadas quando
+        precisar entender um lançamento.
+      </p>
+      <p>
+        Uma venda e um recebimento podem ter datas diferentes. Por isso, total vendido, total
+        recebido e dinheiro em caixa não representam a mesma informação. Use
+        <strong>Relatórios → Recebimentos detalhados</strong> para conferir cada recebimento ou
+        estorno pela sua própria data.
+      </p>
+      <h3 id="comissões">Comissões</h3>
+      <p>
+        Abra <strong>Meu financeiro / comissões</strong> e selecione o período. O profissional
+        consulta os registros vinculados ao seu usuário; o administrador pode consultar a equipe. Se
+        aparecer orientação sobre ausência de vínculo, peça ao administrador para conferir o
+        cadastro do profissional.
+      </p>
+      <p>
+        A comissão é gerada no pagamento dos serviços, considerando o desconto. Produtos vendidos
+        não geram comissão nesta versão. Em uma comanda com serviços e produtos, o desconto é
+        distribuído entre os itens; a comissão usa apenas a parte dos serviços.
+      </p>
+      <p>
+        Exemplo: um serviço com valor líquido de R$ 90 e comissão de 60% gera R$ 54 para o
+        profissional. Alterar o percentual no cadastro não recalcula vendas antigas. Estornos
+        ajustam as comissões correspondentes.
+      </p>
+      <p>
+        Os valores exibidos representam comissão gerada. O repasse efetivo ao profissional não é
+        registrado por essa tela.
+      </p>
+      <h2 id="12-controlar-produtos-e-estoque">12. Controlar produtos e estoque</h2>
+      <h3 id="cadastrar-um-produto">Cadastrar um produto</h3>
+      <ol>
+        <li>Abra <strong>Produtos e estoque → Novo produto</strong>.</li>
+        <li>Informe nome, descrição e <strong>Unidade-base</strong>: ml, g ou un.</li>
+        <li>Defina o <strong>Estoque mínimo</strong> nessa unidade.</li>
+        <li>
+          Se houver venda, preencha <strong>Quantidade em cada unidade vendida</strong> e
+          <strong>Preço de venda por unidade</strong>. Deixe o preço vazio se o produto não estiver
+          à venda.
+        </li>
+        <li>Cadastre embalagens, se forem úteis nas entradas e saídas.</li>
+        <li>Clique em <strong>Salvar produto</strong>.</li>
+      </ol>
+      <p>
+        A unidade-base não pode ser alterada depois. Cadastrar o produto não registra uma entrada de
+        estoque; use a movimentação para lançar a quantidade física.
+      </p>
+      <h3 id="registrar-uma-movimentação">Registrar uma movimentação</h3>
+      <ol>
+        <li>Localize o produto e abra a ação de movimentação.</li>
+        <li>Selecione o <strong>Tipo de movimentação</strong>.</li>
+        <li>Informe a quantidade e confira a <strong>Medida</strong>, quando disponível.</li>
+        <li>Na entrada, selecione o fornecedor e informe o custo, se necessário.</li>
+        <li>Preencha <strong>Motivo da movimentação</strong>.</li>
+        <li>Clique em <strong>Registrar movimentação</strong> e confira o saldo e o histórico.</li>
+      </ol>
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Quando usar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Entrada</td>
+            <td>Produto recebido fisicamente no estoque.</td>
+          </tr>
+          <tr>
+            <td>Perda</td>
+            <td>Produto perdido, vencido ou danificado.</td>
+          </tr>
+          <tr>
+            <td>Baixa manual</td>
+            <td>Outra saída justificada, sem duplicar consumo ou venda já registrados.</td>
+          </tr>
+          <tr>
+            <td>Ajuste de inventário</td>
+            <td>
+              Corrigir o saldo conforme contagem física. Informe o saldo total contado, não a
+              diferença.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Exemplo de ajuste: o sistema mostra 900 ml, mas a contagem encontrou 850 ml. Informe
+        <strong>850</strong> no ajuste; a diferença será registrada pelo sistema.
+      </p>
+      <p>
+        O custo da entrada é por unidade-base, mesmo quando você escolhe uma embalagem. Exemplo:
+        frasco de 500 ml comprado por R$ 20 corresponde a R$ 0,04 por ml. O custo de compra e o
+        preço de venda têm campos separados.
+      </p>
+      <p>
+        O saldo é compartilhado pelo salão e saídas que o deixariam negativo são bloqueadas.
+        Consulte o histórico antes de repetir um lançamento. Se aparecer
+        <strong>Tentar novamente</strong> após falha de envio, use essa opção para conferir o mesmo
+        envio antes de criar outro.
+      </p>
+      <h3 id="fornecedores">Fornecedores</h3>
+      <p>
+        Em <strong>Fornecedores</strong>, cadastre ou edite nome, contatos e observações. Selecione
+        o fornecedor nas entradas quando quiser manter essa referência no histórico.
+      </p>
+      <h2 id="13-consultar-relatórios-e-exportar-planilhas">
+        13. Consultar relatórios e exportar planilhas
+      </h2>
+      <ol>
+        <li>Abra <strong>Relatórios</strong>.</li>
+        <li>Escolha o <strong>Tipo de relatório</strong>.</li>
+        <li>Defina o período e os demais filtros disponíveis.</li>
+        <li>Confira os totais e a lista de resultados.</li>
+        <li>
+          Para guardar uma planilha, clique em <strong>Exportar CSV</strong> e abra o arquivo
+          baixado no seu editor de planilhas.
+        </li>
+      </ol>
+      <table>
+        <thead>
+          <tr>
+            <th>Relatório</th>
+            <th>O que ajuda a conferir</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Serviços e profissionais</td>
+            <td>Quantidade de serviços, produção por profissional e valores permitidos.</td>
+          </tr>
+          <tr>
+            <td>Ocupação da agenda</td>
+            <td>Tempo disponível, ocupado e livre; cancelamentos e faltas.</td>
+          </tr>
+          <tr>
+            <td>Consumo e reposição de estoque</td>
+            <td>
+              Consumos e movimentos do período, além do saldo e necessidade de reposição atuais.
+            </td>
+          </tr>
+          <tr>
+            <td>Recebimentos detalhados</td>
+            <td>Pagamentos e estornos por período, cliente, forma e tipo.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        O relatório de ocupação aceita até 31 dias e usa a jornada atualmente configurada; mudanças
+        de jornada podem alterar a leitura de períodos passados. No relatório de estoque, saldo e
+        mínimo mostram a situação atual mesmo ao consultar movimentos antigos.
+      </p>
+      <p>
+        O CSV mantém os filtros e inclui todas as páginas dos resultados, respeitando suas
+        permissões. Se o limite de exportação for atingido, reduza o período ou refine a busca. Se o
+        editor abrir tudo em uma coluna, importe o arquivo usando ponto e vírgula como separador e
+        codificação UTF-8.
+      </p>
+      <h2 id="14-preparar-o-sistema--administração">14. Preparar o sistema — administração</h2>
+      <p>
+        Esta seção serve a quem administra o salão. Faça os cadastros antes de a equipe começar a
+        operar.
+      </p>
+      <h3 id="ordem-sugerida-de-configuração">Ordem sugerida de configuração</h3>
+      <ol>
+        <li>
+          Em <strong>Usuários e permissões</strong>, crie as contas de quem precisará entrar e
+          escolha os perfis adequados.
+        </li>
+        <li>
+          Em <strong>Profissionais</strong>, cadastre a equipe. Vincule cada profissional à conta
+          correta quando ele precisar consultar a própria agenda e comissões.
+        </li>
+        <li>Configure o percentual de comissão de cada profissional antes dos novos pagamentos.</li>
+        <li>
+          Em <strong>Serviços</strong>, cadastre nome, duração e preço dos serviços oferecidos.
+        </li>
+        <li>
+          Em <strong>Disponibilidade</strong>, configure para cada profissional a
+          <strong>Jornada semanal</strong>, os <strong>Serviços realizados</strong> e os
+          <strong>Bloqueios</strong> necessários.
+        </li>
+        <li>
+          Cadastre produtos, embalagens, preços de venda, fornecedores e o estoque físico inicial
+          por movimentação.
+        </li>
+        <li>Oriente a equipe e combine quem abre, movimenta e fecha o caixa.</li>
+      </ol>
+      <h3 id="jornada-serviços-e-bloqueios">Jornada, serviços e bloqueios</h3>
+      <p>
+        Na <strong>Jornada semanal</strong>, registre os períodos efetivos de trabalho. Para uma
+        pausa de almoço, use períodos separados, por exemplo 09h–12h e 13h–18h.
+      </p>
+      <p>
+        Em <strong>Serviços realizados</strong>, selecione os serviços que aquele profissional
+        oferece. Um serviço cadastrado, mas não vinculado, não aparecerá entre as opções de
+        agendamento desse profissional.
+      </p>
+      <p>
+        Use <strong>Bloqueios</strong> para ausências ou indisponibilidades em datas específicas.
+        Informe período e descrição, confirme e confira o resultado. Resolva eventuais conflitos com
+        agendamentos existentes conforme a mensagem apresentada.
+      </p>
+      <h3 id="acessos-e-senha-provisória">Acessos e senha provisória</h3>
+      <p>
+        Em <strong>Usuários e permissões</strong>, use <strong>Novo usuário</strong>, preencha os
+        dados solicitados, escolha os perfis e salve. Entregue as credenciais diretamente à pessoa.
+        As permissões podem ser ajustadas por perfil e por usuário; uma restrição individual pode
+        impedir uma ação concedida pelo perfil.
+      </p>
+      <p>
+        Para recuperar o acesso de alguém, localize o usuário e use a ação
+        <strong>Redefinir senha</strong>, preencha a senha provisória e confirme. A pessoa deverá
+        trocá-la ao entrar. O sistema protege o último administrador contra a remoção do acesso
+        administrativo.
+      </p>
+      <h3 id="alterar-o-e-mail-de-login">Alterar o e-mail de login</h3>
+      <p>
+        O administrador encontra o botão <strong>Alterar e-mail</strong> na linha do usuário, em
+        <strong>Usuários e permissões → Usuários</strong>.
+      </p>
+      <ol>
+        <li>Localize o usuário pelo nome ou pelo e-mail atual.</li>
+        <li>Clique em <strong>Alterar e-mail</strong> e confira a pessoa selecionada.</li>
+        <li>
+          Preencha <strong>Novo e-mail de login</strong> e <strong>Confirmar novo e-mail</strong>.
+        </li>
+        <li>
+          Informe <strong>Sua senha atual</strong>: a senha do administrador que está fazendo a
+          alteração.
+        </li>
+        <li>
+          Preencha o <strong>Motivo da alteração</strong> e clique em
+          <strong>Salvar e-mail</strong>.
+        </li>
+        <li>
+          Informe o novo endereço ao usuário. Ele deverá entrar com o novo e-mail e a mesma senha de
+          antes.
+        </li>
+      </ol>
+      <p>
+        A alteração encerra as sessões do usuário. Se você alterar o próprio e-mail, voltará à tela
+        de login. Um endereço já utilizado por outra conta será recusado. Contas vinculadas a outro
+        salão não podem ter o e-mail alterado por esta administração. A operação fica registrada na
+        auditoria.
+      </p>
+      <h3 id="conferir-alterações">Conferir alterações</h3>
+      <p>
+        Abra <strong>Auditoria</strong> para consultar o <strong>Histórico de atividades</strong>.
+        Filtre por período, usuário, ação, módulo e demais campos disponíveis. Use os detalhes para
+        entender a alteração e seu motivo.
+      </p>
+      <h2 id="15-resolver-dúvidas-e-dificuldades">15. Resolver dúvidas e dificuldades</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Dúvida ou mensagem</th>
+            <th>O que conferir</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Não encontro um menu ou botão.</td>
+            <td>Permissão da conta e situação do registro. Peça ao administrador para conferir.</td>
+          </tr>
+          <tr>
+            <td>O profissional não encontra a própria agenda ou comissão.</td>
+            <td>Vínculo entre o profissional e o usuário, permissões e filtros.</td>
+          </tr>
+          <tr>
+            <td>O serviço não aparece ao agendar.</td>
+            <td>
+              Serviço ativo e selecionado em Disponibilidade → Serviços realizados para o
+              profissional.
+            </td>
+          </tr>
+          <tr>
+            <td>O horário foi recusado.</td>
+            <td>Jornada, bloqueios e outro agendamento no mesmo intervalo.</td>
+          </tr>
+          <tr>
+            <td>O produto não aparece para venda.</td>
+            <td>Produto ativo e preço de venda preenchido.</td>
+          </tr>
+          <tr>
+            <td>Não consigo receber o pagamento.</td>
+            <td>
+              Itens finalizados, soma igual ao saldo, estoque disponível e caixa aberto quando
+              exigido para dinheiro.
+            </td>
+          </tr>
+          <tr>
+            <td>Concluí o atendimento, mas não apareceu recebimento.</td>
+            <td>
+              Falta finalizar os itens e confirmar o recebimento na seção Pagamentos da comanda.
+            </td>
+          </tr>
+          <tr>
+            <td>O sistema informou que outro usuário alterou o registro.</td>
+            <td>
+              Atualize, confira os dados mais recentes e refaça somente a alteração ainda
+              necessária.
+            </td>
+          </tr>
+          <tr>
+            <td>A lista parece vazia.</td>
+            <td>Data, busca, profissional, status e página selecionada.</td>
+          </tr>
+          <tr>
+            <td>Apareceu erro de conexão depois de confirmar.</td>
+            <td>
+              Aguarde e confira o histórico antes de repetir. Use Tentar novamente quando oferecido
+              para o mesmo envio.
+            </td>
+          </tr>
+          <tr>
+            <td>O login foi solicitado novamente.</td>
+            <td>
+              Entre com sua conta; a sessão pode ter expirado ou ter sido encerrada após troca de
+              senha.
+            </td>
+          </tr>
+          <tr>
+            <td>Não recebi lembrete por WhatsApp.</td>
+            <td>O envio automático ainda não está ativo nesta versão.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Se o problema continuar, informe ao responsável pelo sistema qual tela estava aberta, o que
+        tentou fazer e o texto do erro. Não envie senha. Se compartilhar uma imagem da tela, oculte
+        informações de clientes e outros dados privados.
+      </p>
+      <h3 id="conferência-antes-de-confirmar">Conferência antes de confirmar</h3>
+      <p>
+        Antes de salvar uma operação, confira cliente, profissional, data, quantidade e valor.
+        Aguarde a confirmação do sistema e consulte o resultado. Para aprender ou treinar, peça um
+        ambiente de treinamento ao responsável; não crie vendas ou movimentações fictícias no salão
+        em operação.
+      </p>
+      <footer>
+        Ateliê · Manual do usuário · 24/09/2026. Exemplos ilustrativos, sem dados reais de clientes.
+      </footer>
+    </main>
+  </body>
+</html>

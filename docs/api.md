@@ -265,3 +265,9 @@ Endpoints: `GET /reports/production/export`, `/reports/occupancy/export`, `/repo
 Resposta autenticada JSON `{ filename, content }`, usada pela interface para baixar CSV localmente. UTF-8 com BOM, ponto e vírgula, aspas escapadas, decimais com vírgula preservados como texto no arquivo. Conteúdo inclui metadados (tipo/período/fuso/geração/filtros/observações), uma linha vazia e cabeçalho/tabela. Estoque conserva seis casas, valores monetários duas; não cria arquivo XLSX. Na importação em planilha, escolher texto para colunas cuja precisão integral precisa ser mantida além do limite numérico da planilha.
 
 Textos controlados pelo usuário com prefixo de fórmula são neutralizados com apóstrofo, preservando números negativos simples. A geração é auditada como `RELATORIO_EXPORTADO` na entidade `reports`, contendo somente tipo, período, quantidade e fuso (sem cópia do arquivo). Falha em registrar auditoria impede entrega do conteúdo. O registro indica geração, não comprova salvamento do arquivo pelo navegador. Sem envio a terceiros e sem alteração de lançamentos financeiros/estoque.
+
+## Alteração administrativa de e-mail de login
+
+`PATCH /api/access/users/:id/email` recebe `email`, `currentPassword` (senha do administrador), `reason` (5–500 caracteres) e `revision` da consulta de usuários. Exige perfil protegido `ROLE_ADMIN` e permissões `usuarios.gerenciar`/`roles.gerenciar`; a listagem retorna `canChangeEmail` para orientar a interface. Validação e autorização são repetidas no servidor.
+
+Normaliza espaços externos/caixa, rejeita endereço inalterado ou duplicado, versão desatualizada, alvo fora do salão e conta com qualquer vínculo em outro salão. A transação altera somente o e-mail da conta, revoga todas as suas sessões e registra `EMAIL_LOGIN_ALTERADO`, motivo e e-mails antes/depois, sem senha. Preserva senha, perfis, permissões e histórico. Alteração própria é permitida e exige novo login. Limite de 8 tentativas/minuto. Sem migration.

@@ -2,6 +2,8 @@
 
 React + TypeScript, API NestJS e PostgreSQL. Nome visual provisório: **Ateliê**.
 
+Manual para a equipe do salão: [versão editável](docs/manual-do-usuario.md) e [versão para abrir no navegador e imprimir](docs/manual-do-usuario.html).
+
 ## Entrega atual
 
 - Fundação com banco real, migrations e seed idempotente de permissões.
@@ -21,7 +23,7 @@ React + TypeScript, API NestJS e PostgreSQL. Nome visual provisório: **Ateliê*
 - Produtos com unidade-base, embalagens compatíveis e estoque mínimo; fornecedores e entradas, perdas, baixas e ajustes com histórico e proteção contra duplicação.
 - Troca de senha pelo titular e redefinição administrativa com senha provisória e troca obrigatória.
 
-O sistema completo ainda está em desenvolvimento. O financeiro inicial está disponível. Relatórios avançados, despesas, caixa diário e integrações bancárias **ainda não estão implementados**. Os menus **Comandas** e **Atendimentos** já permitem acompanhar serviços, valores e consumo de produtos. Após finalizar os serviços, use **Receber pagamento** na comanda. Os registros são manuais, sem cobrança ou devolução automática no banco. Produtos e estoque e Fornecedores estão disponíveis no menu; o saldo é compartilhado pelo salão, sem lotes ou separação por unidade. A agenda está disponível no menu **Agenda**. Na lista de clientes, o botão **Comandas** abre o histórico autorizado daquele cliente. O histórico de alterações da reserva já aparece nos detalhes da agenda. Não há recuperação de senha por e-mail nesta entrega. A tela de acessos permite criar contas com senha inicial e editar seus vínculos e permissões; alteração de nome/e-mail ainda não faz parte desta etapa. A troca de senha fica em **Minha conta**; a redefinição de outro usuário fica em **Usuários e permissões**. Veja [o plano](docs/roadmap.md).
+O sistema completo ainda está em desenvolvimento. O financeiro inicial está disponível. Relatórios avançados, despesas, caixa diário e integrações bancárias **ainda não estão implementados**. Os menus **Comandas** e **Atendimentos** já permitem acompanhar serviços, valores e consumo de produtos. Após finalizar os serviços, use **Receber pagamento** na comanda. Os registros são manuais, sem cobrança ou devolução automática no banco. Produtos e estoque e Fornecedores estão disponíveis no menu; o saldo é compartilhado pelo salão, sem lotes ou separação por unidade. A agenda está disponível no menu **Agenda**. Na lista de clientes, o botão **Comandas** abre o histórico autorizado daquele cliente. O histórico de alterações da reserva já aparece nos detalhes da agenda. Não há recuperação de senha por e-mail nesta entrega. A tela de acessos permite criar contas com senha inicial e editar seus vínculos e permissões; alteração de nome ainda não faz parte desta etapa. O administrador pode alterar o e-mail de login pelo botão **Alterar e-mail** em **Usuários e permissões**, confirmando sua senha e o motivo; a troca encerra as sessões da conta alterada. A troca de senha fica em **Minha conta**; a redefinição de outro usuário fica em **Usuários e permissões**. Veja [o plano](docs/roadmap.md).
 
 ## Requisitos
 

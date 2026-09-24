@@ -1,4 +1,38 @@
-# Retomada — atualizada em 19/09/2026
+# Retomada — atualizada em 24/09/2026
+
+## Alteração administrativa do e-mail — validada localmente em 24/09/2026
+
+Função concluída no código local: Usuários e permissões → Alterar e-mail, exclusiva para perfil protegido Administrador com permissões de gestão. Exige novo e-mail/confirmar no formulário, senha atual do administrador e motivo. Normaliza endereço, recusa duplicado/inalterado, versão desatualizada, alvo de outro salão e conta compartilhada entre salões. Preserva senha, status, perfis e histórico; revoga sessões da conta e audita antes/depois. Alteração própria redireciona ao login. Login revalida endereço sob lock para fechar corrida com troca de e-mail. Sem migration.
+
+Validações: typecheck, build, formatação dos arquivos envolvidos, diff e suíte completa `npm run test:e2e` aprovados. API: autenticação/origem/perfil, dados inválidos, senha errada, duplicidade, escopo entre salões (inclusive vínculo inativo), revisões, duas alterações simultâneas, disputa pelo mesmo e-mail, sessões revogadas, login antigo recusado/novo aceito com senha preservada, autoalteração e auditoria sem senha. Navegador: botão, confirmação divergente recusada, troca/normalização, lista atualizada e status inativo preservado. Primeira suíte passou navegador e cenários anteriores, mas falhou na criação de fixture por relação Prisma incorreta; fixture corrigida e repetição integral aprovada. Bibliotecas locais do navegador foram usadas pelo runner existente.
+
+Manual Markdown/HTML, README e API atualizados. Nenhum dado real alterado, nenhuma migration aplicada, nenhum commit/push/deploy nesta etapa. A função ainda não está publicada no site. Próximo passo de entrega: publicar a alteração validada e conferir deploy; aceite autenticado e confirmação de e-mail do Healthchecks continuam pendentes. Documentação anterior preservada.
+
+## Alteração administrativa do e-mail — implementação em 24/09/2026
+
+Usuário solicitou função para administrador alterar e-mail de login dos usuários. Implementados endpoint específico e botão “Alterar e-mail” em Usuários e permissões, com confirmação do endereço, senha atual do administrador e motivo. API exige perfil protegido Administrador e permissões de gestão, normaliza endereço, recusa duplicidade/edição desatualizada/conta de outro salão ou com vínculo externo, registra antes/depois na auditoria e revoga sessões da conta alterada. Login verifica e-mail novamente sob lock para evitar uso do endereço antigo em corrida. Administrador pode alterar o próprio e-mail, com retorno ao login. Sem migration.
+
+Typecheck aprovado. Portas conferidas fora do sandbox, sem processos do salão. Suíte completa API/navegador em PostgreSQL descartável iniciada; ainda sem resultado neste marco. Testes novos cobrem API, concorrência e formulário. Nenhuma alteração em dados reais, publicação ou push. Preservadas as alterações de documentação das etapas anteriores.
+
+## Manual do usuário — 24/09/2026
+
+Usuário solicitou documentação para o usuário final. Criados `docs/manual-do-usuario.md` (editável) e `docs/manual-do-usuario.html` (arquivo independente para navegador, com índice e botão de impressão/salvar como PDF). Abrange login, menus, rotina diária, clientes, agenda, comandas/atendimentos, consumo e venda de produtos, pagamentos, cancelamentos/estornos, caixa, comissões, estoque, relatórios, administração e dúvidas. Exemplos fictícios apenas no texto; nenhuma operação no salão. README recebeu links.
+
+Nomes e regras conferidos no código das telas e documentação funcional; sem alegar aceite autenticado. Prettier e validação dos 15 links internos aprovados. Primeiro verificador de âncoras acusou falsos erros por URL com acentos codificados; repetição com decodificação passou. Tentativa de revisão em Chromium/geração direta de PDF falhou pela biblioteca ausente `libnspr4.so`; nenhum PDF foi gerado e layout não foi validado visualmente. HTML inclui estilo de impressão para exportação pelo navegador do usuário. Nenhum serviço iniciado, dependência instalada, teste de aplicação executado, migration, dado real, publicação ou commit/push nesta etapa. Próximo passo: usuário consultar o manual; aceite autenticado e confirmação de entrega de e-mail permanecem pendentes.
+
+## Confirmação dos sinais e preparação do aceite — 24/09/2026
+
+Após autorização para continuar, logs individuais dos jobs foram consultados diretamente pela API GitHub. Ambos contêm “Monitor externo confirmou o recebimento do resultado.” e não contêm a mensagem de monitor sem configuração: backup `35994480546` (job `107616057480`) e monitor `35902145519` (job `107320750556`). Isso confirma comunicação real com Healthchecks; entrega de e-mail e configuração do painel continuam pendentes. Nenhum alerta de teste foi enviado.
+
+Smoke público da Vercel aprovado: `/` 200, `/api/health` 200 e `/api/auth/me` 401 sem sessão. Primeira tentativa bloqueada pela rede do sandbox, repetição escalada aprovada. Roteiro de aceite criado em `docs/aceite-operacional.md`; validação autenticada ainda não executada, depende da sessão do usuário. Nenhum lançamento fictício, migration ou dado real alterado; sem nova suíte de testes porque só houve consultas e documentação. Próximo passo: usuário acessar Agenda na aplicação publicada para iniciar conferência somente leitura; validar e-mail de alertas quando tiver acesso ao painel. Documentação salva localmente, sem commit/push.
+
+## Conferência na retomada — 24/09/2026
+
+Usuário pediu continuar. Árvore Git inicialmente limpa, commit local `9376c3b`; GitHub confirmou esse commit nas execuções, portanto a integração Healthchecks foi publicada. Backups diários de 20 a 24/09 e monitores de 20 a 23/09 concluídos com sucesso. Último backup: `35994480546`, iniciado em 24/09 às 08h41 de São Paulo e concluído às 08h42; etapa de criar/cifrar/verificar cópia externa aprovada. Último monitor: `35902145519`, iniciado em 23/09 às 15h23, com consulta de cópia recente no Drive aprovada. Monitor de 24/09 ainda não consta na listagem consultada. Agendamentos continuam sujeitos a atrasos.
+
+Etapa “Informar resultado ao monitor externo” aprovada em ambos os últimos jobs. Extração filtrada de logs via `gh run view --log` não retornou texto; não foi possível distinguir mensagem de recebimento confirmado de ausência de configuração apenas pelo status da etapa. Secrets haviam sido conferidos em 19/09. Painel Healthchecks, período/tolerância e entrega de e-mail continuam sem validação direta. Próximo passo: usuário conferir os dois checks no painel e testar notificação por e-mail; depois avançar no aceite autenticado dos fluxos publicados. WhatsApp segue adiado pelo número novo.
+
+Consulta inicial GitHub falhou pela rede do sandbox; repetição escalada passou. Nesta sessão não houve novo backup manual, consulta direta ao Drive, restauração, migration, teste de aplicação ou alteração de dados reais. Apenas conferência operacional e atualização dos registros locais, sem commit/push.
 
 ## Conexão Healthchecks — 19/09, publicação em andamento
 

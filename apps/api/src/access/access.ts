@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ConflictException,
   Controller,
@@ -109,6 +110,19 @@ const newUser = accessInput
     password: z.string().min(8).max(128),
   })
   .strict();
+const emailInput = z
+  .object({
+    email: z
+      .string()
+      .trim()
+      .email()
+      .max(254)
+      .transform((v) => v.toLowerCase()),
+    currentPassword: z.string().min(1).max(128),
+    revision: z.string().length(64),
+    reason,
+  })
+  .strict();
 const editUser = accessInput.extend({ revision: z.string().length(64) }).strict();
 const roleInput = z
   .object({ name: z.string().trim().min(2).max(100), permissions: codes, reason })
@@ -119,6 +133,19 @@ const json = (v: object): Prisma.InputJsonValue => JSON.parse(JSON.stringify(v))
 @UseGuards(SessionGuard)
 export class AccessController {
   constructor(private db: Database) {}
+
+  private async canChangeEmail(tx: Prisma.TransactionClient, req: AuthRequest) {
+    return (
+      management.every((p) => req.identity.permissions.includes(p)) &&
+      !!(await tx.userRole.findFirst({
+        where: {
+          salonId: req.identity.salonId,
+          membershipId: req.identity.membershipId,
+          role: { code: 'ROLE_ADMIN', protected: true },
+        },
+      }))
+    );
+  }
 
   // All access writers share this lock, including changes to different administrators.
   private async authorize(tx: Prisma.TransactionClient, req: AuthRequest, required: string[]) {
@@ -219,7 +246,13 @@ export class AccessController {
       ],
       { isolationLevel: 'RepeatableRead' },
     );
-    return { items: items.map(memberView), total, page, pageSize: 20 };
+    return {
+      items: items.map(memberView),
+      total,
+      page,
+      pageSize: 20,
+      canChangeEmail: await this.canChangeEmail(this.db, req),
+    };
   }
   @Get('roles')
   @Require('roles.gerenciar')
@@ -348,6 +381,67 @@ export class AccessController {
       return after;
     });
   }
+  @Patch('users/:id/email')
+  @Require(...management)
+  @Throttle({ default: { limit: 8, ttl: 60000 } })
+  async changeEmail(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: unknown,
+    @Req() req: AuthRequest,
+  ) {
+    const data = parse(emailInput, body);
+    return this.db.$transaction(async (tx) => {
+      await this.authorize(tx, req, management);
+      if (!(await this.canChangeEmail(tx, req)))
+        throw new ForbiddenException('Somente o administrador pode alterar o e-mail de login.');
+      const target = await tx.salonUser.findFirst({
+        where: { id, salonId: req.identity.salonId },
+        include: memberInclude,
+      });
+      if (!target) throw new NotFoundException('Usuário não encontrado neste salão.');
+      await lockPasswordAccount(tx, req.identity.salonId, target.userId);
+      if (
+        await tx.salonUser.count({
+          where: { userId: target.userId, salonId: { not: req.identity.salonId } },
+        })
+      )
+        throw new ForbiddenException(
+          'Esta conta possui vínculo com outro salão. O e-mail não pode ser alterado por esta administração.',
+        );
+      const current = await tx.salonUser.findUniqueOrThrow({
+        where: { id },
+        include: memberInclude,
+      });
+      if (memberView(current).revision !== data.revision)
+        throw new ConflictException('Este acesso mudou. Feche a janela e atualize a lista.');
+      const session = await requireCurrentSession(tx, req);
+      if (!(await verify(session.user.passwordHash, data.currentPassword)))
+        throw incorrectPassword();
+      if (current.user.email === data.email)
+        throw new BadRequestException('Informe um e-mail diferente do atual.');
+      if (await tx.user.findUnique({ where: { email: data.email }, select: { id: true } }))
+        throw new ConflictException(
+          'Não foi possível utilizar este e-mail. Utilize outro endereço.',
+        );
+      await tx.user.update({ where: { id: target.userId }, data: { email: data.email } });
+      await tx.userSession.updateMany({
+        where: { userId: target.userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      await this.audit(
+        tx,
+        req,
+        'salon_users',
+        id,
+        'EMAIL_LOGIN_ALTERADO',
+        data.reason,
+        { email: data.email },
+        { email: current.user.email },
+      );
+      return { message: 'E-mail de login alterado. Entre com o novo e-mail e a senha existente.' };
+    });
+  }
+
   @Post('users/:id/password')
   @Require(...management)
   @Throttle({ default: { limit: 8, ttl: 60000 } })
