@@ -2,6 +2,10 @@
 
 ## Status desta iteração
 
+Visual em 24/09: nova identidade marfim/oliva/bronze implementada localmente em login, navegação e componentes compartilhados. Typecheck, build, suíte completa API/navegador isolada, revisão visual e cinco larguras de viewport aprovados. Sem dado real, migration ou publicação; capturas de prévia disponíveis em `.local/screenshots/visual-desktop.png` e `visual-mobile.png`.
+
+Publicação em 24/09: alteração de e-mail enviada no commit `edfa91c`, deploy Vercel concluído. Página e health 200, bundle novo confirmado e rota de alteração protegida (401 sem sessão). Sem migration ou alteração de usuário real; aceite autenticado pendente.
+
 E-mail de login em 24/09: alteração administrativa implementada e validada localmente (typecheck, build e suíte completa API/navegador isolada). Botão em Usuários e permissões, confirmação de senha do administrador, motivo, auditoria e sessões revogadas; preserva a senha do usuário. Sem migration ou dado real alterado. Publicação ainda pendente. Manual atualizado.
 
 Manual para a equipe preparado em 24/09: `docs/manual-do-usuario.md` e versão HTML independente para consulta/impressão. Conteúdo conferido com as telas; não substitui o aceite autenticado ainda pendente. Arquivos locais, sem publicação no site.

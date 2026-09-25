@@ -1,5 +1,45 @@
 # Retomada — atualizada em 24/09/2026
 
+## Serviços encerrados — 24/09/2026
+
+Usuário pediu fechar tudo que estava rodando. Encerradas com SIGINT as sessões 26198 (interface Vite, API e watchers) e 34926 (PostgreSQL local). Conferência externa de portas mostrou somente DNS do ambiente; nenhuma porta do projeto ativa. Consulta de processos não encontrou PostgreSQL, Vite, tsc/node watch, API ou concurrently. Dados locais preservados; nenhum arquivo de banco removido. Para retomar, conferir portas e iniciar banco/API/interface novamente.
+
+Ao recolher a saída final da API, havia um erro 500 `PrismaClientKnownRequestError` registrado durante o uso local, sem detalhes suficientes para determinar a causa. Não investigado durante o pedido de encerramento; verificar compatibilidade do esquema local e migrations na próxima retomada se o erro persistir, sem aplicar migrações ao banco real por suposição. Novo visual segue apenas local e registros salvos, sem publicação adicional.
+
+## Ponto de parada — 24/09/2026
+
+Usuário encerrou por enquanto após abrir o projeto local. Novo visual implementado e validado localmente, ainda sem commit/push/publicação. Próxima retomada: colher avaliação do visual e publicar se solicitado. Alteração de e-mail de login já publicada no commit `edfa91c`; não confundir com a renovação visual local.
+
+Processos locais mantidos ativos, conforme informado ao usuário: banco 5432 (`npm run db:local`, sessão 34926), API 3001 e frontend localhost:5173 (`npm run dev`, sessão 26198). Conferir portas e processos antes de reiniciar, pois podem ter encerrado entre sessões. Última checagem de interface e health foi 200 na abertura; não houve nova validação nesta despedida. Registros salvos em arquivos locais; nenhuma alteração de dados reais ou publicação adicional.
+
+## Projeto local aberto — 24/09/2026
+
+Usuário pediu abrir o projeto local para visualizar o novo frontend. Portas conferidas antes de iniciar; nenhuma instância anterior. `.env` conferido somente por host/porta, apontando ao banco local, sem revelar credenciais. Iniciados `npm run db:local` (5432, sessão 34926) e `npm run dev` (API 3001 e frontend localhost:5173, sessão 26198). Interface e health da API retornaram 200. Navegador do Windows aberto em `http://localhost:5173` por Start-Process, comando concluído com sucesso.
+
+Processos deixados ativos a pedido do usuário. Usa o banco local existente, não o Neon; nenhuma migration, seed ou teste executado nesta abertura. Login autenticado não conferido nesta etapa. Novo visual permanece sem publicação. Para parar, encerrar as sessões de desenvolvimento e banco com SIGINT/Ctrl+C, sem apagar `.local/postgres`.
+
+## Visual elegante — concluído localmente em 24/09/2026
+
+Renovação aplicada ao frontend: fundo marfim, menu oliva escuro, detalhes bronze, títulos serifados, cartões e tabelas com hierarquia mais clara, ícones próprios por módulo, login renovado e visão geral com indicadores destacados. Tipografia do sistema elimina a importação externa de fontes. Funcionalidades, permissões e dados preservados; nenhuma mudança de API ou migration.
+
+Typecheck, build, Prettier, diff e suíte completa API/navegador (`npm run test:e2e`) aprovados em PostgreSQL isolado. Primeira suíte detectou transbordamento de 2px em campo de data no celular; `min-width:0` corrigiu o tamanho mínimo e filtros móveis passaram a uma coluna para mostrar a data inteira. Repetição integral passou. Revisão visual realizada em login desktop/celular, visão geral, menu móvel, agenda desktop e comanda móvel. Consulta adicional com respostas fictícias no navegador confirmou largura sem transbordamento em 320, 390, 768, 1024 e 1440px. Contraste calculado dos seis pares principais de texto/fundo ficou acima de 4,5:1; isso não representa auditoria completa de acessibilidade. Capturas em `.local/screenshots/visual-desktop.png`, `visual-mobile.png`, `visual-login-desktop.png`, `visual-login-mobile.png`; contêm apenas exemplos fictícios.
+
+Usuário voltou a informar que não cancelou uma chamada. Comando composto (editar roteiro local e executar navegador com escalonamento) retornou “aborted by user” após 3s; arquivo demonstrou que a edição nem ocorreu. Edição feita separadamente no sandbox e execução simples autorizada `node .local/visual-check.cjs` passaram. Registros locais disponíveis não contêm diagnóstico do cancelamento; causa exata permanece desconhecida. Não atribuir ao usuário nem afirmar correção definitiva do cliente. Nenhum controle de segurança foi desativado. Adotar comandos separados para operações locais e execução que exige escalonamento.
+
+Novo visual ainda local, sem commit/push/deploy; usuário ainda não aprovou publicação desta mudança visual. Documentação de publicação do e-mail preservada. Banco real não acessado. Prévia local em porta 5181 foi usada só com interceptação de API/dados fictícios durante a revisão; processo encerrado ao finalizar a revisão. Próximo passo: usuário ver as capturas e decidir sobre a publicação do visual. Alertas por e-mail/aceite operacional seguem pendentes.
+
+## Renovação visual — em andamento em 24/09/2026
+
+Usuário pediu aparência mais chique, clean, elegante e harmônica; depois reforçou continuar. Direção aplicada localmente: marfim, oliva escuro, bronze discreto, títulos serifados e corpo/números legíveis. CSS global atualizado, login com composição em arco, menu com ícones distintos por módulo e sem bloco decorativo excedente, visão geral com destaque de indicadores e data contextual. Fontes usam recursos do sistema, sem chamada ao Google Fonts. Rotas, permissões e ações preservadas. Sem API/migration/dado real alterado.
+
+Typecheck aprovado; portas conferidas antes da suíte, sem processos do salão. `npm run test:e2e` em banco isolado iniciado para build, regressão e capturas desktop/celular. Revisão visual e resultado final dos testes ainda pendentes neste marco. Alterações de documentação sobre a publicação anterior foram preservadas. Nenhum commit/push/deploy do novo visual.
+
+## Publicação do e-mail e interrupções de ferramenta — 24/09/2026
+
+Usuário autorizou publicar. Commit `edfa91c` enviado para `origin/main`; status Vercel success/Deployment has completed. Conferência pública concluída: página e health 200, auth/me 401 sem sessão, bundle contém “Novo e-mail de login” e “Salvar e-mail”, PATCH da rota nova com ID fictício e sem sessão recusado com 401. Nenhum usuário real foi alterado; nenhuma migration necessária. Aceite autenticado pelo usuário ainda pendente.
+
+Duas chamadas de verificação externa com script multilinha e escalonamento retornaram “aborted by user” após cerca de 12–15 segundos, sem resultado de execução. Usuário esclareceu que não cancelou; não tratar esses eventos como cancelamento intencional. Causa exata não confirmada: diferença observada no fluxo de chamada/aprovação, não evidência de falha da aplicação. Consulta simples previamente autorizada funcionou; script multilinha no sandbox falhou por rede; novas consultas curtas com escalonamento concluíram sem interrupção e confirmaram o deploy. Nenhuma configuração de segurança foi desativada. Skill OpenAI Docs consultada para diagnóstico; documentação geral não determina a causa específica. Tentativas iniciais de git add/commit no sandbox falharam por .git somente leitura; repetidas com escalonamento passaram. Git estava limpo após publicação; este registro e roadmap ficam salvos localmente depois da conferência.
+
 ## Alteração administrativa do e-mail — validada localmente em 24/09/2026
 
 Função concluída no código local: Usuários e permissões → Alterar e-mail, exclusiva para perfil protegido Administrador com permissões de gestão. Exige novo e-mail/confirmar no formulário, senha atual do administrador e motivo. Normaliza endereço, recusa duplicado/inalterado, versão desatualizada, alvo de outro salão e conta compartilhada entre salões. Preserva senha, status, perfis e histórico; revoga sessões da conta e audita antes/depois. Alteração própria redireciona ao login. Login revalida endereço sob lock para fechar corrida com troca de e-mail. Sem migration.

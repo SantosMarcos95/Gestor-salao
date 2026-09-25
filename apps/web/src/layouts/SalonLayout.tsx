@@ -1,7 +1,27 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
-import { CalendarDays, LayoutDashboard, LogOut, Menu, ShieldCheck, Users, X } from 'lucide-react';
+import {
+  CalendarDays,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  ShieldCheck,
+  Users,
+  X,
+  ChartNoAxesCombined,
+  Wallet,
+  HandCoins,
+  ReceiptText,
+  ClipboardList,
+  Scissors,
+  Package,
+  Truck,
+  Clock3,
+  History,
+  UserRound,
+  Sparkles,
+} from 'lucide-react';
 import { api, type Profile } from '../lib/api';
 import { Brand } from '../components/Brand';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
@@ -63,8 +83,8 @@ export function SalonLayout({ profile }: { profile: Profile }) {
         >
           <X />
         </button>
-        <p className="nav-label">SEU SALÃO</p>
-        <nav onClick={() => setOpen(false)}>
+        <p className="nav-label">ESPAÇO DE TRABALHO</p>
+        <nav aria-label="Menu principal" onClick={() => setOpen(false)}>
           <NavLink to="/" end>
             <LayoutDashboard size={19} />
             Visão geral
@@ -79,64 +99,64 @@ export function SalonLayout({ profile }: { profile: Profile }) {
             can('relatorios.estoque') ||
             can('relatorios.financeiro')) && (
             <NavLink to="/relatorios">
-              <LayoutDashboard size={19} />
+              <ChartNoAxesCombined size={19} aria-hidden="true" />
               Relatórios
             </NavLink>
           )}
           {can('financeiro.visualizar') && (
             <NavLink to="/financeiro">
-              <LayoutDashboard size={19} />
+              <Wallet size={19} aria-hidden="true" />
               Financeiro
             </NavLink>
           )}
           <NavLink to="/meu-financeiro">
-            <LayoutDashboard size={19} />
+            <HandCoins size={19} aria-hidden="true" />
             Meu financeiro / comissões
           </NavLink>
           {can('caixa.gerenciar') && (
             <NavLink to="/caixa">
-              <LayoutDashboard size={19} />
+              <Wallet size={19} aria-hidden="true" />
               Caixa
             </NavLink>
           )}
           {canOrders && (
             <NavLink to="/comandas">
-              <LayoutDashboard size={19} />
+              <ReceiptText size={19} aria-hidden="true" />
               Comandas
             </NavLink>
           )}
           {canVisits && (
             <NavLink to="/atendimentos">
-              <Users size={19} />
+              <ClipboardList size={19} aria-hidden="true" />
               Atendimentos
             </NavLink>
           )}
           {can('profissionais.gerenciar') && (
             <NavLink to="/profissionais">
-              <Users size={19} />
+              <Scissors size={19} aria-hidden="true" />
               Profissionais
             </NavLink>
           )}
           {(can('agenda.gerenciar_disponibilidade') || can('profissionais.gerenciar')) && (
             <NavLink to="/disponibilidade">
-              <CalendarDays size={19} />
+              <Clock3 size={19} aria-hidden="true" />
               Disponibilidade
             </NavLink>
           )}
           {can('servicos.visualizar') && (
             <NavLink to="/servicos">
-              <CalendarDays size={19} />
+              <Scissors size={19} aria-hidden="true" />
               Serviços
             </NavLink>
           )}
           {can('produtos.visualizar') && (
             <>
               <NavLink to="/produtos">
-                <LayoutDashboard size={19} />
+                <Package size={19} aria-hidden="true" />
                 Produtos e estoque
               </NavLink>
               <NavLink to="/fornecedores">
-                <Users size={19} />
+                <Truck size={19} aria-hidden="true" />
                 Fornecedores
               </NavLink>
             </>
@@ -155,20 +175,15 @@ export function SalonLayout({ profile }: { profile: Profile }) {
           )}
           {can('auditoria.visualizar') && (
             <NavLink to="/auditoria">
-              <ShieldCheck size={19} />
+              <History size={19} aria-hidden="true" />
               Auditoria
             </NavLink>
           )}
           <NavLink to="/minha-conta">
-            <ShieldCheck size={19} />
+            <UserRound size={19} aria-hidden="true" />
             Minha conta
           </NavLink>
         </nav>
-        <div className="sidebar-note">
-          <CalendarDays size={23} />
-          <strong>Um passo de cada vez</strong>
-          <p>Da agenda ao atendimento, acompanhe os serviços e o cuidado com cada cliente.</p>
-        </div>
         <div className="sidebar-bottom">
           <span className="avatar">{profile.name.slice(0, 1).toUpperCase()}</span>
           <div>
@@ -189,10 +204,10 @@ export function SalonLayout({ profile }: { profile: Profile }) {
           >
             <Menu />
           </button>
-          <span>{profile.salonName}</span>
+          <span className="topbar-name">{profile.salonName}</span>
           <span className="topbar-right">
-            <span className="status-dot" />
-            Seu espaço de gestão
+            <Sparkles size={14} aria-hidden="true" />
+            Gestão com cuidado
           </span>
         </header>
         {error && (

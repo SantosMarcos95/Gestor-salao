@@ -27,11 +27,13 @@ export function LoginPage({ onSuccess }: { onSuccess: () => Promise<unknown> }) 
     <main className="login">
       <section className="login-story">
         <Brand />
+        <div className="story-frame" aria-hidden="true" />
         <div className="story-copy">
           <span className="eyebrow light">MAIS TEMPO PARA O QUE IMPORTA</span>
           <h1>
             Seu talento cuida.
-            <br />A gente organiza.
+            <br />
+            <em>A gente organiza.</em>
           </h1>
           <p>Um espaço para cuidar da rotina do seu salão, das pessoas e de cada novo começo.</p>
           <div className="story-line" />

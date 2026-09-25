@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CalendarDays, ReceiptText, Package, Users, Wallet } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { api, type Profile } from '../../lib/api';
@@ -25,7 +26,7 @@ export function DashboardPage({ profile }: { profile: Profile }) {
   });
   return (
     <>
-      <div className="page-heading">
+      <div className="page-heading dashboard-intro">
         <div>
           <span className="eyebrow">VISÃO GERAL</span>
           <h1>
@@ -34,6 +35,18 @@ export function DashboardPage({ profile }: { profile: Profile }) {
           </h1>
           <p className="muted">Acompanhe a agenda e as pendências do salão.</p>
         </div>
+        {context.data && (
+          <div className="dashboard-date">
+            <span>HOJE NO SALÃO</span>
+            <time dateTime={context.data.today}>
+              {new Intl.DateTimeFormat('pt-BR', {
+                day: 'numeric',
+                month: 'long',
+                timeZone: 'UTC',
+              }).format(new Date(`${context.data.today}T12:00:00Z`))}
+            </time>
+          </div>
+        )}
       </div>
       {context.isPending ? (
         <p>Carregando visão geral…</p>
@@ -139,7 +152,10 @@ function DashboardContent({
                 {summary.data.agenda !== null && (
                   <section className="panel">
                     <div className="section-title">
-                      <h2>Agenda no período</h2>
+                      <div className="dashboard-card-heading">
+                        <CalendarDays aria-hidden="true" />
+                        <h2>Agenda no período</h2>
+                      </div>
                       <Link to="/agenda">Ver agenda</Link>
                     </div>
                     <p className="muted">
@@ -162,7 +178,10 @@ function DashboardContent({
                 {summary.data.orders !== null && (
                   <section className="panel">
                     <div className="section-title">
-                      <h2>Comandas pendentes agora</h2>
+                      <div className="dashboard-card-heading">
+                        <ReceiptText aria-hidden="true" />
+                        <h2>Comandas pendentes agora</h2>
+                      </div>
                       <Link to="/comandas">Ver comandas</Link>
                     </div>
                     <p className="muted">
@@ -185,8 +204,11 @@ function DashboardContent({
                 )}
                 {summary.data.stock !== null && (
                   <section className="panel">
-                    <h2>Reposição de estoque</h2>
-                    <p>
+                    <div className="dashboard-card-heading">
+                      <Package aria-hidden="true" />
+                      <h2>Reposição de estoque</h2>
+                    </div>
+                    <p className="dashboard-stat">
                       <strong>{summary.data.stock}</strong> produtos ativos no mínimo ou abaixo
                       dele.
                     </p>
@@ -196,8 +218,11 @@ function DashboardContent({
                 )}
                 {summary.data.clients !== null && (
                   <section className="panel">
-                    <h2>Clientes cadastrados</h2>
-                    <p>
+                    <div className="dashboard-card-heading">
+                      <Users aria-hidden="true" />
+                      <h2>Clientes cadastrados</h2>
+                    </div>
+                    <p className="dashboard-stat">
                       <strong>{summary.data.clients}</strong> clientes não arquivados.
                     </p>
                     <p className="muted">Cadastro atual, independente do período.</p>
@@ -220,7 +245,10 @@ function DashboardContent({
           {can('financeiro.visualizar') && (
             <section className="panel">
               <div className="section-title">
-                <h2>Financeiro no período</h2>
+                <div className="dashboard-card-heading">
+                  <Wallet aria-hidden="true" />
+                  <h2>Financeiro no período</h2>
+                </div>
                 <Link to="/financeiro">Ver financeiro</Link>
               </div>
               {finance.isPending ? (
