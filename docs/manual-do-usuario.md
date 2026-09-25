@@ -293,6 +293,10 @@ Se o saldo mudar enquanto você confere, atualize e reconte antes de fechar. O t
 
 Entre em **Financeiro**, escolha o período e confira vendas, cancelamentos, recebimentos e estornos. Consulte as formas de pagamento e as comandas relacionadas quando precisar entender um lançamento.
 
+O **Total líquido do período** aparece em destaque e já desconta os estornos. O total recebido e os valores por forma de pagamento mostram os recebimentos antes desses descontos. Se uma venda foi recebida em um dia e estornada em outro, inclua as duas datas para conferir o efeito completo; o valor líquido não representa lucro nem saldo do caixa.
+
+Em **Histórico de vendas**, confira a **Situação atual**: vendas canceladas permanecem identificadas, com o valor original. Em **Vendas canceladas**, o filtro usa a data do cancelamento. Ao abrir **Ver pagamentos**, uma venda cancelada mostra **Venda cancelada — valor original**, recebido após estornos e saldo pendente. O troco fica nos detalhes do pagamento em dinheiro, como histórico do que foi entregue e devolvido, sem indicador de troco no resumo geral.
+
 Uma venda e um recebimento podem ter datas diferentes. Por isso, total vendido, total recebido e dinheiro em caixa não representam a mesma informação. Use **Relatórios → Recebimentos detalhados** para conferir cada recebimento ou estorno pela sua própria data.
 
 ### Comissões

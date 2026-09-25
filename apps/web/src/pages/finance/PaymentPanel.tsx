@@ -73,7 +73,9 @@ export function PaymentPanel({
               <>
                 <div className="order-summary">
                   <div>
-                    <span>Venda registrada</span>
+                    <span>
+                      {data.sale.void ? 'Venda cancelada — valor original' : 'Venda registrada'}
+                    </span>
                     <strong>{formatPrice(data.sale.total)}</strong>
                   </div>
                   <div>
@@ -87,9 +89,11 @@ export function PaymentPanel({
                 </div>
                 {data.sale.void && (
                   <p>
-                    Venda cancelada em {new Date(data.sale.void.createdAt).toLocaleString('pt-BR')}.
+                    Venda cancelada em {new Date(data.sale.void.createdAt).toLocaleString('pt-BR')}.{' '}
+                    O valor original e os pagamentos abaixo ficam preservados no histórico.
                   </p>
                 )}
+                <h3>Histórico de pagamentos</h3>
                 {data.sale.payments.map((p) => (
                   <article className="inventory-package" key={p.id}>
                     <strong>

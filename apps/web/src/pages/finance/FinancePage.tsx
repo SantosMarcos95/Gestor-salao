@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api, type Page } from '../../lib/api';
 import { Pagination } from '../../components/Pagination';
 import { formatPrice } from '../services/types';
+import { orderStates } from '../orders/types';
 import { PaymentPanel } from './PaymentPanel';
 import { methods } from './types';
 type Summary = {
@@ -14,7 +15,6 @@ type Summary = {
   netReceived: string;
   outstanding: string;
   outstandingCount: number;
-  change: string;
   byMethod: { method: string; amount: string }[];
 };
 type Entry = {
@@ -25,6 +25,7 @@ type Entry = {
   amount: string;
   method?: string;
   paymentMethods?: string[];
+  status?: string;
 };
 export function FinancePage({ permissions }: { permissions: string[] }) {
   const context = useQuery({
@@ -79,13 +80,9 @@ function FinanceContent({
   });
   const cards = summary.data
     ? [
-        ['Total recebido no período', summary.data.received],
-        ...['PIX', 'CREDIT', 'DEBIT', 'CASH', 'OTHER'].map((method) => [
-          method === 'OTHER' ? 'Outras formas' : methods[method],
-          summary.data!.byMethod.find((m) => m.method === method)?.amount ?? '0.00',
-        ]),
-        ['Estornos no período', summary.data.refunded],
         ['Total líquido do período', summary.data.netReceived],
+        ['Total recebido no período', summary.data.received],
+        ['Estornos no período', summary.data.refunded],
       ]
     : [];
   return (
@@ -148,14 +145,37 @@ function FinanceContent({
         <>
           <h2>Resumo do período</h2>
           <p className="muted">
-            O total recebido soma PIX, crédito, débito, dinheiro e outras formas. Os estornos
-            aparecem separados. Total líquido = total recebido − estornos.
+            Total líquido = total recebido − estornos. Cada recebimento e estorno entra na sua
+            própria data. Se a devolução ocorreu depois da venda, inclua as duas datas para ver o
+            resultado completo. Este valor não representa lucro nem saldo do caixa.
           </p>
           <div className="finance-cards">
-            {cards.map(([label, value]) => (
-              <section className="panel finance-card" key={label}>
+            {cards.map(([label, value], index) => (
+              <section
+                className={`panel finance-card${index === 0 ? ' finance-card-primary' : ''}`}
+                key={label}
+              >
                 <span>{label}</span>
                 <strong>{formatPrice(value)}</strong>
+                {index === 0 && <small>Já descontados os estornos do período.</small>}
+                {index === 1 && <small>Antes de descontar os estornos.</small>}
+              </section>
+            ))}
+          </div>
+          <h3>Recebimentos por forma de pagamento</h3>
+          <p className="muted">
+            Valores recebidos antes dos estornos. As devoluções estão somadas em Estornos no período
+            e já descontadas do total líquido.
+          </p>
+          <div className="finance-cards">
+            {['PIX', 'CREDIT', 'DEBIT', 'CASH', 'OTHER'].map((method) => (
+              <section className="panel finance-card" key={method}>
+                <span>{method === 'OTHER' ? 'Outras formas' : methods[method]}</span>
+                <strong>
+                  {formatPrice(
+                    summary.data.byMethod.find((m) => m.method === method)?.amount ?? '0.00',
+                  )}
+                </strong>
               </section>
             ))}
           </div>
@@ -164,9 +184,7 @@ function FinanceContent({
             {summary.data.outstandingCount} comandas. Independente do período selecionado.
           </p>
           <p className="muted">
-            Troco no período: {formatPrice(summary.data.change)}. O troco não é contado como
-            receita. Os valores de cartão são os registrados pelo salão, sem conciliação de repasse
-            ou taxas.
+            Os valores de cartão são os registrados pelo salão, sem conciliação de repasse ou taxas.
           </p>
         </>
       )}
@@ -191,6 +209,22 @@ function FinanceContent({
           </label>
         </div>
         {kind === 'due' && <p className="muted">Pendências atuais de todos os períodos.</p>}
+        {kind === 'sales' && (
+          <p className="muted">
+            Histórico pelo dia da venda, com o valor original e a situação atual. Vendas canceladas
+            permanecem identificadas para consulta; seus estornos entram no resumo pela data da
+            devolução.
+          </p>
+        )}
+        {kind === 'payments' && (
+          <p className="muted">
+            Recebimentos originais, incluindo os que tiveram estorno. Consulte Estornos para ver as
+            devoluções e Total líquido do período para o resultado após os estornos.
+          </p>
+        )}
+        {kind === 'voids' && (
+          <p className="muted">Vendas pelo dia do cancelamento, com o valor original preservado.</p>
+        )}
         {['sales', 'due'].includes(kind) && (
           <p className="muted">
             As formas de pagamento mostram o histórico da venda, incluindo recebimentos estornados.
@@ -212,7 +246,8 @@ function FinanceContent({
                 <tr>
                   <th>CLIENTE</th>
                   <th>DATA</th>
-                  <th>VALOR</th>
+                  <th>{['sales', 'voids'].includes(kind) ? 'VALOR ORIGINAL' : 'VALOR'}</th>
+                  {kind === 'sales' && <th>SITUAÇÃO ATUAL</th>}
                   <th>FORMA DE PAGAMENTO</th>
                   <th>AÇÕES</th>
                 </tr>
@@ -224,7 +259,14 @@ function FinanceContent({
                     <td data-label="Data">
                       {new Date(i.createdAt).toLocaleString('pt-BR', { timeZone: timezone })}
                     </td>
-                    <td data-label="Valor">{formatPrice(i.amount)}</td>
+                    <td data-label={['sales', 'voids'].includes(kind) ? 'Valor original' : 'Valor'}>
+                      {formatPrice(i.amount)}
+                    </td>
+                    {kind === 'sales' && (
+                      <td data-label="Situação atual">
+                        <strong>{orderStates[i.status ?? ''] ?? '—'}</strong>
+                      </td>
+                    )}
                     <td data-label="Forma de pagamento">
                       {i.method
                         ? methods[i.method]

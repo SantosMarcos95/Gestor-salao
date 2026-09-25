@@ -1,4 +1,50 @@
-# Retomada — atualizada em 24/09/2026
+# Retomada — atualizada em 25/09/2026
+
+## Publicação do financeiro — autorizada em 25/09
+
+Usuário autorizou publicar a atualização de clareza do Financeiro. Mudanças e estado Git conferidos; testes isolados, typecheck, build e revisão visual já aprovados nesta sessão, sem mudanças funcionais posteriores. Publicação em preparação: criar commit, enviar a `origin/main`, aguardar Vercel e conferir bundle/CSS e endpoints públicos. Nenhuma migration necessária; dados reais preservados. Não considerar esta atualização disponível até confirmar o deploy.
+
+## Clareza do financeiro — concluída localmente em 25/09
+
+Implementação validada: Financeiro e dashboard destacam total líquido; recebimentos brutos/estornos e formas de pagamento têm explicações próprias; troco aparece somente nos detalhes do pagamento; painel de comanda cancelada exibe “Venda cancelada — valor original” e histórico; lista de vendas mostra valor original e situação atual. Datas próprias dos eventos e cálculos existentes preservados. Manual Markdown/HTML atualizado.
+
+Typecheck, build, formatação dos arquivos alterados e suíte completa `npm run test:e2e` aprovados em PostgreSQL isolado. Navegador conferiu estorno parcial sem indicar cancelamento, cancelamento integral com valor original preservado e saldo/recebido líquido zerados, destaque do líquido, ausência de troco no resumo, presença do troco no detalhe e acesso ao histórico de cancelamento. Revisão visual de Financeiro desktop e histórico/comanda cancelada no celular realizada; checagens móveis sem transbordamento passaram. Capturas fictícias em `.local/screenshots/finance-desktop.png`, `finance-cancelled-mobile.png` e `cancelled-payment-mobile.png`.
+
+Sem API, migration ou dado real alterado. Suíte encerrada com sucesso. Alteração salva localmente, sem commit/push/deploy; site publicado ainda usa versão anterior desta apresentação. Próximo passo para disponibilizar: publicação e conferência do deploy. Aceite autenticado e entrega de e-mail do Healthchecks continuam pendentes.
+
+## Clareza do financeiro — implementação em validação em 25/09
+
+Usuário aceitou ajustar a apresentação após a confusão com venda cancelada/troco. Alterado frontend: total líquido primeiro e destacado no Financeiro e dashboard; recebimentos por forma separados com indicação de valores antes dos estornos; troco retirado do resumo e preservado no detalhe; comanda cancelada mostra “Venda cancelada — valor original”; histórico de vendas mostra situação atual e valor original, com explicação das datas de recebimento/devolução. Manual Markdown/HTML atualizado. API, cálculos financeiros e registros reais preservados; nenhuma migration.
+
+Portas conferidas fora do sandbox, sem processos do projeto. Typecheck e suíte completa `test:e2e` com PostgreSQL descartável iniciados, resultados ainda pendentes neste marco. Cenários de navegador estendidos para conferir cancelamento, saldo zerado, histórico, troco apenas no detalhe e layout móvel. Sem commit/push ou publicação desta alteração até este marco.
+
+## Confusão com troco após cancelamento — 25/09/2026
+
+Usuário confirmou estorno de R$ 99 e saldo pendente de R$ 0 na comanda, sem fornecer confirmação visual de “Venda cancelada em”. Depois relatou “Troco no período: R$ 51,00”, acredita que o pagamento foi em dinheiro e questionou retirar vendas canceladas do financeiro geral. Leitura do código confirmou: resumo soma `payment.change` original por data do pagamento, inclusive após estorno; cancelamento registra devolução do valor aplicado restante e, para dinheiro com controle de caixa ativo, saída no turno atual. Troco histórico não representa nova saída ou saldo pendente.
+
+Orientação proposta: resumo principal destacar valor líquido, troco restrito aos detalhes do pagamento e venda cancelada identificada claramente; preservar histórico e datas próprias de recebimento/devolução, sem apagar registros ou zerar retroativamente um período anterior. Exemplo explicativo condicionado a pagamento de R$ 150 para venda de R$ 99: troco de R$ 51 e devolução posterior de R$ 99 resultam em efeito acumulado zero. Dados reais não consultados; forma/valor entregue não confirmados. Nenhuma mudança funcional, teste, migration ou publicação nesta discussão.
+
+## Orientação sobre venda de 16/09 — 25/09/2026
+
+Usuário informou que realizou o procedimento, mas ainda vê “Venda registrada” de R$ 99. Código conferido: PaymentPanel mantém esse rótulo e o total original mesmo quando `sale.void` existe; mostra cancelamento separadamente. Explicação de apresentação confirmada no código, mas cancelamento dessa venda real ainda não verificado: conferir mensagem “Venda cancelada em”, recebido após estornos e saldo pendente zerados. Nenhuma mudança de código ou dado realizada. Resumo por período usa datas próprias de recebimentos/estornos, portanto filtro só em 16/09 não inclui estorno posterior.
+
+Usuário perguntou como excluir uma venda registrada em 16/09. Manual e código da interface conferidos: Financeiro → Histórico de vendas → período incluindo 16/09 → Ver pagamentos → Cancelar venda e estornar, conforme permissões. A operação preserva histórico, exige motivo e confirmação, estorna recebimentos nos registros e não devolve dinheiro externamente nem produtos ao estoque automaticamente. Somente orientação; venda não consultada nem alterada, origem do lançamento ainda desconhecida. Nenhuma exclusão ou cancelamento executado.
+
+## Consulta de pendências — 25/09/2026
+
+Usuário perguntou se há algo a concluir. Revisados os registros de retomada, roadmap, roteiro de aceite e estado Git, sem consulta externa ou nova execução de testes. Últimas publicações registradas: alteração administrativa de e-mail e novo visual, ambas concluídas em 24/09. Pendências imediatas: aceite autenticado dos fluxos/visual; conferência do painel e entrega de e-mail do Healthchecks; diagnóstico do erro Prisma 500 observado no uso local, ainda sem causa identificada. WhatsApp continua adiado até obter número exclusivo. Roadmap também mantém evoluções futuras e critérios adicionais de produção, incluindo medição de recuperação com volume representativo e testes de carga; não confundir os registros históricos de preparação com tarefas já concluídas posteriormente.
+
+Git tinha somente alterações nos três documentos de continuidade de 24/09; não havia alteração de código pendente no status consultado. Nenhum serviço iniciado, migration aplicada, dado real acessado/alterado ou publicação nesta consulta. Próximo passo recomendado: concluir aceite operacional e confirmação de alertas. Resumo desta consulta em `docs/conversas/2026-09-25.md`.
+
+## Novo visual publicado — 24/09/2026
+
+Commit `d6918f7` publicado em `origin/main`; Vercel confirmou success/Deployment has completed. Verificação pública posterior confirmou página 200 e CSS 200 contendo a paleta marfim (`--canvas:#f6f3ed`) e a nova tipografia (`--font-display`). Health 200 e auth/me 401 sem sessão. Primeira consulta durante deploy ainda servia estilo anterior; repetição após conclusão confirmou atualização.
+
+Publicação autorizada pelo usuário, concluída sem migration ou alteração de dados reais. Testes completos e revisão visual já aprovados antes do envio; nenhuma mudança funcional adicional nesta publicação. Serviços locais permanecem encerrados. Registros finais salvos localmente. Próximas pendências: aceite autenticado do visual/fluxos, entrega de e-mail do Healthchecks e eventual investigação do erro Prisma observado no ambiente local anterior.
+
+## Publicação do novo visual — em andamento em 24/09/2026
+
+Usuário autorizou subir a atualização visual. Commit `d6918f7` criado e enviado a `origin/main`, incluindo frontend validado e registros de continuidade. Vercel confirmou deploy em andamento. Primeira consulta pública retornou página/CSS 200, mas ainda com estilo anterior. Falta aguardar deploy e confirmar CSS novo e health. Sem migration ou alteração de dados reais; serviços locais permanecem encerrados.
 
 ## Serviços encerrados — 24/09/2026
 

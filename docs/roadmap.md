@@ -2,6 +2,10 @@
 
 ## Status desta iteração
 
+Financeiro em 25/09: clareza de cancelamento/troco ajustada e validada localmente. Líquido em destaque, recebimentos brutos explicados, troco somente nos detalhes, venda cancelada com valor original identificado e situação atual visível no histórico. Manual atualizado. Typecheck, build, suíte completa API/navegador isolada e revisão visual desktop/celular aprovados. Sem alteração de API, cálculos ou migration; dados reais preservados. Publicação desta atualização ainda pendente.
+
+Novo visual publicado em 24/09 no commit `d6918f7`: deploy Vercel success, página e CSS novos confirmados publicamente, health 200 e sessão protegida (401 sem login). Sem migration ou alteração de dados reais. Serviços locais encerrados.
+
 Visual em 24/09: nova identidade marfim/oliva/bronze implementada localmente em login, navegação e componentes compartilhados. Typecheck, build, suíte completa API/navegador isolada, revisão visual e cinco larguras de viewport aprovados. Sem dado real, migration ou publicação; capturas de prévia disponíveis em `.local/screenshots/visual-desktop.png` e `visual-mobile.png`.
 
 Publicação em 24/09: alteração de e-mail enviada no commit `edfa91c`, deploy Vercel concluído. Página e health 200, bundle novo confirmado e rota de alteração protegida (401 sem sessão). Sem migration ou alteração de usuário real; aceite autenticado pendente.

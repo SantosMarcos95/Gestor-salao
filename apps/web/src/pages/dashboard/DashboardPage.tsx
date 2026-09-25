@@ -260,13 +260,15 @@ function DashboardContent({
               ) : (
                 <>
                   <div className="finance-cards">
+                    <div className="finance-card finance-card-primary">
+                      <span>Total líquido do período</span>
+                      <strong>{formatPrice(finance.data.netReceived)}</strong>
+                      <small>Já descontados os estornos do período.</small>
+                    </div>
                     <div className="finance-card">
                       <span>Total recebido no período</span>
                       <strong>{formatPrice(finance.data.received)}</strong>
-                    </div>
-                    <div className="finance-card">
-                      <span>Total líquido do período</span>
-                      <strong>{formatPrice(finance.data.netReceived)}</strong>
+                      <small>Antes de descontar os estornos.</small>
                     </div>
                   </div>
                   <p>
@@ -275,7 +277,8 @@ function DashboardContent({
                   </p>
                   <p className="muted">
                     Estornos no período: {formatPrice(finance.data.refunded)}. Total líquido = total
-                    recebido − estornos. Os valores não representam lucro.
+                    recebido − estornos, cada um na sua data. Os valores não representam lucro nem
+                    saldo do caixa.
                   </p>
                 </>
               )}

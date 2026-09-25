@@ -390,6 +390,8 @@ export async function testFinanceBrowser({ page, expect, root, join, prisma, sal
   await page.getByRole('button', { name: 'Confirmar estorno', exact: true }).click();
   await page.getByRole('dialog').waitFor({ state: 'hidden' });
   await expect(page.locator('.page-heading')).toContainText('Saldo pendente');
+  await expect(page.locator('.payment-panel')).toContainText('Venda registrada');
+  await expect(page.locator('.payment-panel')).not.toContainText('Venda cancelada');
   await page.getByRole('button', { name: 'Receber pagamento', exact: true }).click();
   await page.getByLabel('Forma de pagamento 1', { exact: true }).selectOption('OTHER');
   await page.getByLabel('Confirmo os dados e o recebimento dos valores informados.').check();
@@ -408,10 +410,27 @@ export async function testFinanceBrowser({ page, expect, root, join, prisma, sal
   await page.getByRole('button', { name: 'Confirmar cancelamento da venda', exact: true }).click();
   await page.getByRole('dialog').waitFor({ state: 'hidden' });
   await expect(page.locator('.page-heading')).toContainText('Cancelada');
+  const cancelledSummary = page.locator('.payment-panel .order-summary');
+  await expect(cancelledSummary).toContainText('Venda cancelada — valor original');
+  await expect(cancelledSummary.locator('div').filter({ hasText: 'valor original' })).toContainText(
+    'R$ 35,05',
+  );
+  for (const label of ['Recebido após estornos', 'Saldo pendente'])
+    await expect(cancelledSummary.locator('div').filter({ hasText: label })).toContainText(
+      'R$ 0,00',
+    );
+  await expect(page.locator('.payment-panel')).toContainText('Troco: R$ 9,95');
+  await page.screenshot({
+    path: join(root, '.local/screenshots/cancelled-payment-mobile.png'),
+    fullPage: true,
+  });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.getByRole('button', { name: 'Abrir menu', exact: true }).click();
   await page.getByRole('link', { name: 'Financeiro', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Financeiro', exact: true })).toBeVisible();
   await expect(page.getByLabel('Lançamentos', { exact: true })).toHaveValue('payments');
+  await expect(page.locator('.finance-card').first()).toContainText('Total líquido do período');
+  await expect(page.getByText('Troco no período:', { exact: false })).toHaveCount(0);
   await expect(
     page.locator('.finance-card').filter({ hasText: 'Total recebido no período' }),
   ).toContainText('R$ 40,10');
@@ -426,6 +445,21 @@ export async function testFinanceBrowser({ page, expect, root, join, prisma, sal
   ).toContainText('R$ 0,00');
   await page.getByLabel('Lançamentos', { exact: true }).selectOption('sales');
   await expect(page.getByRole('table')).toContainText('Dinheiro + PIX');
+  const cancelledRow = page.getByRole('row').filter({ hasText: 'Cliente atualizado no navegador' });
+  await expect(cancelledRow.getByText('Cancelada', { exact: true })).toBeVisible();
+  await expect(cancelledRow.locator('[data-label="Valor original"]')).toContainText('R$ 35,05');
+  await cancelledRow.getByRole('button', { name: 'Ver pagamentos', exact: true }).click();
+  await expect(page.locator('.payment-panel')).toContainText('Venda cancelada — valor original');
+  await expect(page.locator('.payment-panel')).toContainText('Troco: R$ 9,95');
+  await page.screenshot({
+    path: join(root, '.local/screenshots/finance-cancelled-mobile.png'),
+    fullPage: true,
+  });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await page.getByRole('button', { name: 'Fechar pagamentos', exact: true }).click();
+  await page.getByLabel('Lançamentos', { exact: true }).selectOption('voids');
+  await expect(page.getByRole('table')).toContainText('Cliente atualizado no navegador');
+  await expect(page.getByRole('table')).toContainText('R$ 35,05');
   await page.getByLabel('Lançamentos', { exact: true }).selectOption('payments');
   await expect(page.getByRole('table')).toContainText('Cliente atualizado no navegador');
   await page.screenshot({
